@@ -1,0 +1,182 @@
+#!/usr/bin/env sh
+
+
+### Functions ###
+welcome() {
+	clear
+
+	echo "Welcome to LI"
+	echo "This script makes it easy to install Arch or Artix quick and easy while meeting any needs you may have."
+	echo "Press Enter To Continue..."
+	read useless
+}
+
+prescript() {
+	clear
+	echo "Are you installing on Arch Linux or Artix Linux?"
+	echo "1) Arch Linux"
+	echo "2) Artix Linux"
+
+	read OS
+
+	case $OS in
+		1) OS="Arch" ;;
+		2) OS="Artix" ;;
+		*) echo "unkown or unsupported OS..."; exit ;;
+	esac
+
+	clear
+	echo "This installer script uses fzf for some menus and needs to be installed, would you like to coninue?"
+	echo "1) Install fzf"
+	echo "2) Exit Script"
+
+	read fzfinstall
+
+	case $fzfinstall in
+		1) sudo pacman --noconfirm -Sy fzf ;;
+		2) echo "Exiting..." & exit ;;
+		*) echo "Unkown Option" & exit ;;
+	esac
+
+	clear
+	echo "Which editor would you like to use during this install?"
+	echo "1) nvim"
+	echo "2) nano"
+
+	read editor
+
+	case $editor in
+		1) sudo pacman --noconfirm -S neovim; editor="nvim" ;;
+		2) editor="nano" ;;
+		*) echo "unkown editor" & exit ;;
+	esac
+}
+
+formatdrive() {
+	clear
+	echo "Are you installing on an Bios or (U)EFI machine?"
+	echo "1) Bios"
+	echo "2) (U)EFI"
+
+	read bios
+
+	case $bios in
+		1) bios="bios" ;;
+		2) bios="efi" ;;
+		*) echo "unkown option"; exit ;;
+	esac
+
+	echo "Would you like to completely wipe the drive and do a complete (re)install or configure the drives yourself?"
+	echo "1) Configure Partitions manually"
+	echo "2) Wipe drive and (re)install $OS"
+
+	read auto
+
+	case $auto in
+		1) clear
+		   if [ $bios = "bios" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot"
+		   elif [ $bios = "efi" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot/efi"; fi
+		   echo "General rule of thumb, root partition is mounted at /mnt"
+		   echo "and home pertition (if you have one) is mounted at /mnt/home"
+		   bash
+		   wait
+
+		   echo "Please select the drive you would like to install $OS to:"
+		   echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')"
+
+		   read sdrive
+		   cdrive=$(echo "$sdrive" | awk '{print $1}') ;;
+		2) clear
+		   echo "Please select the drive you would like to install $OS to:"
+		   echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')"
+
+		   read sdrive
+		   cdrive=$(echo "$sdrive" | awk '{print $1}')
+
+		   clear
+		   echo "How big do you want your root partition to be? (30gb,50gb,etc)"
+
+		   read rps
+
+		   clear
+		   echo "Do you want a swap partition? Y/n"
+
+		   read ssp
+
+		   case $ssp in
+		   	n) ;;
+			*) echo "How big do you want your swap patition? Usually 1.5x your ram"; read sps
+		   esac
+
+		   dd if=/dev/zero of="$cdrive"  bs=512  count=1
+		   case $bios in
+		   	efi) echo "g\nn\n\n\n+500mb\nn\n\n\n+"$sps"\nn\n\n\n+"$rps"\nn\n\n\n\nw" | fdisk "$cdrive"
+			     mkdir /mnt/boot
+			     mkdir /mnt/boot/efi
+			     mkfs.fat -F32 "$cdrive"1
+			     mount "$cdrive"1 /mnt/boot/efi ;;
+			*) echo "n\np\n\n\n+500mb\nn\np\n\n\n+"$sps"\nn\np\n\n\n+"$rps"\nn\np\n\n\n\nw" | fdisk "$cdrive"
+			   mkfs.ext4 "$cdrive"1
+			   mkdir /mnt/boot
+			   mount "$cdrive"1 /mnt/boot ;;
+		   esac
+		   mkfs.ext4 "$cdrive"3
+		   mkfs.ext4 "$cdrive"4
+		   mount "$cdrive"3 /mnt
+		   mkdir /mnt/home
+		   mount "$cdrive"4 /mnt/home
+		   mkswap "$cdrive"2
+		   swapon "$cdrive"2
+	esac
+}
+
+mirrorlist() {
+	case $OS in
+		Arch) echo "The Arch Mirrorlist can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
+		      read useless
+		      $editor /etc/pacman.d/mirrorlist ;;
+	esac
+}
+
+initsystem() {
+	case $OS in
+		Artix) echo "Which init system would you like to install?"
+		       echo "1) openrc"
+		       echo "2) runit"
+		       echo "3) s6"
+
+		       read init ;;
+	esac
+}
+
+install() {
+	case $OS in
+		Arch) pacstrap /mnt linux linux-firmware base ;;
+		Artix) case $init in
+			1) basestrap /mnt linux linux-firmware base elogind-openrc openrc ;;
+			2) basestrap /mnt linux linux-firmware base elogind-runit runit ;;
+			3) basestrap /mnt linux linux-firmware base elogind-s6 s6 ;;
+		esac
+	esac
+}
+
+postinstall() {
+	case $OS in
+		Arch) genfstab -U -p /mnt >> /mmt/etc/fstab
+		Artix) fstabgen -U -p /mnt >> /mnt/etc/fstab
+	esac
+
+### Actual Script ###
+
+welcome || exit
+
+prescript || exit
+
+formatdrive || exit
+
+mirrorlist || exit
+
+initsystem || exit
+
+postinstall || exit
+
