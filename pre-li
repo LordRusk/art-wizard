@@ -25,30 +25,20 @@ prescript() {
 		*) echo "unkown or unsupported OS..."; exit ;;
 	esac
 
-	clear
-	echo "This installer script uses fzf for some menus and needs to be installed, would you like to coninue?"
-	echo "1) Install fzf"
-	echo "2) Exit Script"
-
-	read fzfinstall
-
-	case $fzfinstall in
-		1) sudo pacman --noconfirm -Sy fzf ;;
-		2) echo "Exiting..." & exit ;;
-		*) echo "Unkown Option" & exit ;;
-	esac
 
 	clear
 	echo "Which editor would you like to use during this install?"
 	echo "1) nvim"
 	echo "2) nano"
+	echo "3) other..."
 
 	read editor
 
 	case $editor in
 		1) sudo pacman --noconfirm -S neovim; editor="nvim" ;;
 		2) editor="nano" ;;
-		*) echo "unkown editor" & exit ;;
+		3) echo "Enter the name of the editor..."; read editor; sudo pacman --no-confirm $editor
+		*) echo "Unkown Option" & exit ;;
 	esac
 }
 
@@ -66,6 +56,7 @@ formatdrive() {
 		*) echo "unkown option"; exit ;;
 	esac
 
+	clear
 	echo "Would you like to completely wipe the drive and do a complete (re)install or configure the drives yourself?"
 	echo "1) Configure Partitions manually"
 	echo "2) Wipe drive and (re)install $OS"
@@ -109,17 +100,29 @@ formatdrive() {
 		   esac
 
 		   dd if=/dev/zero of="$cdrive"  bs=512  count=1
-		   case $bios in
-		   	efi) cat ~/li/efi-fdisk | fdisk "$cdrive"
-			     mkdir /mnt/boot
-			     mkdir /mnt/boot/efi
-			     mkfs.fat -F32 "$cdrive"1
-			     mount "$cdrive"1 /mnt/boot/efi ;;
-			*) cat ~/li/bios-fdisk | fdisk "$cdrive"
-			   mkfs.ext4 "$cdrive"1
-			   mkdir /mnt/boot
-			   mount "$cdrive"1 /mnt/boot ;;
-		   esac
+		   if [ $bios = efi ] & [ $ssp = n ]; then
+		   	cat ~/li/fdisk-efi-noswap | fdisk "$cdrive"
+			mkdir /mnt/boot
+			mkdir /mnt/boot/efi
+			mkfs.fat -F32 "$cdrive"1
+			mount "$cdrive"1 /mnt/boot/efi
+		   elif [ $bios = efi ] & [ $ssp != n ]; then
+			cat ~/li/fdisk-efi-swap | fdisk "$cdrive"
+			mkdir /mnt/boot
+			mkdir /mnt/boot/efi
+			mkfs.fat -F32 "$cdrive"1
+			mount "$cdrive"1 /mnt/boot/efi
+		   elif [ $bios = bios ] & [ $ssp = n ]; then
+			cat ~/li/fdisk-bios-noswap | fdisk "$cdrive"
+			mkfs.ext4 "$cdrive"1
+			mk dir /mnt/boot
+			mount "$cdrive"1 /mnt/boot
+		  elif [ $bios = bios ] & [ $ssp != n ]; then
+			cat ~/li/fdisk-bios-swap | fdisk "$cdrive"
+			mkfs.ext4 "$cdrive"1
+			mk dir /mnt/boot
+			mount "$cdrive"1 /mnt/boot
+		   fi
 		   mkfs.ext4 "$cdrive"3
 		   mkfs.ext4 "$cdrive"4
 		   mount "$cdrive"3 /mnt
