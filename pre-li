@@ -37,7 +37,7 @@ prescript() {
 	case $editor in
 		1) sudo pacman --noconfirm -S neovim; editor="nvim" ;;
 		2) editor="nano" ;;
-		3) echo "Enter the name of the editor..."; read editor; sudo pacman --no-confirm $editor
+		3) echo "Enter the name of the editor..."; read editor; sudo pacman --no-confirm $editor ;;
 		*) echo "Unkown Option" & exit ;;
 	esac
 }
