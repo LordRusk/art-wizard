@@ -110,12 +110,12 @@ formatdrive() {
 
 		   dd if=/dev/zero of="$cdrive"  bs=512  count=1
 		   case $bios in
-		   	efi) echo "g\nn\n\n\n+500mb\nn\n\n\n+"$sps"\nn\n\n\n+"$rps"\nn\n\n\n\nw" | fdisk "$cdrive"
+		   	efi) cat ~/li/efi-fdisk | fdisk "$cdrive"
 			     mkdir /mnt/boot
 			     mkdir /mnt/boot/efi
 			     mkfs.fat -F32 "$cdrive"1
 			     mount "$cdrive"1 /mnt/boot/efi ;;
-			*) echo "n\np\n\n\n+500mb\nn\np\n\n\n+"$sps"\nn\np\n\n\n+"$rps"\nn\np\n\n\n\nw" | fdisk "$cdrive"
+			*) cat ~/li/bios-fdisk | fdisk "$cdrive"
 			   mkfs.ext4 "$cdrive"1
 			   mkdir /mnt/boot
 			   mount "$cdrive"1 /mnt/boot ;;
@@ -162,9 +162,11 @@ install() {
 
 postinstall() {
 	case $OS in
-		Arch) genfstab -U -p /mnt >> /mmt/etc/fstab
-		Artix) fstabgen -U -p /mnt >> /mnt/etc/fstab
+		Arch) genfstab -U -p /mnt >> /mmt/etc/fstab ;;
+		Artix) fstabgen -U -p /mnt >> /mnt/etc/fstab ;;
 	esac
+}
+
 
 ### Actual Script ###
 
