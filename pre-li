@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-
 ### Functions ###
 welcome() {
 	clear
@@ -12,6 +11,17 @@ welcome() {
 }
 
 prescript() {
+	clear
+	echo "Art Installer needs dash and fzf"
+	echo "to function. Would you like to install these? Y/n"
+
+	read temp
+
+	case $temp in
+		n) echo "Exiting Installer..."; exit ;;
+		*) pacman --noconfirm --needed -Sy dash fzf ;;
+	esac
+
 	clear
 	echo "Are you installing on Arch Linux or Artix Linux?"
 	echo "1) Arch Linux"
@@ -27,18 +37,13 @@ prescript() {
 
 
 	clear
-	echo "Which editor would you like to use during this install?"
-	echo "1) nvim"
-	echo "2) nano"
-	echo "3) other..."
+	echo "Enter the name of your preferred text editor to be used throughout the installation proccess."
+	echo "(neovim, nano, etc..."
 
 	read editor
-
 	case $editor in
-		1) sudo pacman --noconfirm -S neovim; editor="nvim" ;;
-		2) editor="nano" ;;
-		3) echo "Enter the name of the editor..."; read editor; sudo pacman --noconfirm $editor ;;
-		*) echo "Unkown Option" & exit ;;
+		neovim) pacman --needed --noconfirm -Sy $editor; editor="nvim" ;;
+		*) pacman --needed --noconfirm -Sy $editor ;;
 	esac
 }
 
@@ -81,8 +86,8 @@ formatdrive() {
 		   echo "Please select the drive you would like to install $OS to:"
 		   echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')"
 
-		   read sdrive
-		   cdrive=$(echo "$sdrive" | awk '{print $1}')
+		   read cdrive
+		   #cdrive=$(echo "$sdrive" | awk '{print $1}')
 
 		   clear
 		   echo "How big do you want your root partition to be? (30gb,50gb,etc)"
@@ -101,24 +106,24 @@ formatdrive() {
 
 		   dd if=/dev/zero of="$cdrive"  bs=512  count=1
 		   if [ $bios = efi ] & [ $ssp = n ]; then
-		   	cat ~/li/fdisk-efi-noswap | fdisk "$cdrive"
+		   	dash ~/li/partitioner ens $cdrive 500mb $rps
 			mkdir /mnt/boot
 			mkdir /mnt/boot/efi
 			mkfs.fat -F32 "$cdrive"1
 			mount "$cdrive"1 /mnt/boot/efi
 		   elif [ $bios = efi ] & [ $ssp != n ]; then
-			cat ~/li/fdisk-efi-swap | fdisk "$cdrive"
+		   	dash ~/li/partitioner es $cdrive 500mb $rps $sps
 			mkdir /mnt/boot
 			mkdir /mnt/boot/efi
 			mkfs.fat -F32 "$cdrive"1
 			mount "$cdrive"1 /mnt/boot/efi
 		   elif [ $bios = bios ] & [ $ssp = n ]; then
-			cat ~/li/fdisk-bios-noswap | fdisk "$cdrive"
+		   	dash ~/li/partitioner bns $cdrive 500mb $rps
 			mkfs.ext4 "$cdrive"1
 			mk dir /mnt/boot
 			mount "$cdrive"1 /mnt/boot
 		  elif [ $bios = bios ] & [ $ssp != n ]; then
-			cat ~/li/fdisk-bios-swap | fdisk "$cdrive"
+		   	dash ~/li/partitioner bs $cdrive 500mb $rps $sps
 			mkfs.ext4 "$cdrive"1
 			mk dir /mnt/boot
 			mount "$cdrive"1 /mnt/boot
@@ -136,7 +141,7 @@ formatdrive() {
 mirrorlist() {
 	case $OS in
 		Arch) echo "The Arch Mirrorlist can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
-		      read useless
+		      read temp
 		      $editor /etc/pacman.d/mirrorlist ;;
 	esac
 }
@@ -182,6 +187,8 @@ formatdrive || exit
 mirrorlist || exit
 
 initsystem || exit
+
+install || exit
 
 postinstall || exit
 

@@ -1,0 +1,31 @@
+#!/usr/bin/env dash
+
+# Art Partitioner
+# This partitioner is used by
+# Art Installer to make partition
+# schemes with or without a swap
+# partition.
+
+# $1 = Type of partition
+# $2 = What drive to partition (/dev/sd*)
+# $3 = Boot partition size
+# $4 = Root partition size
+# $5 = Swap partition size (if needed)
+
+### Functions ###
+biosswap() { echo "n\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n+$4\nn\np\n\n\n\nw" | fdisk "$1"; }
+biosnoswap() { echo "n\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n\nw" | fdisk "$1"; }
+efiswap() { echo "g\nn\n\n\n+$2\nn\n\n\n+$3\nn\n\n\n+$4\nn\n\n\n\nw" | fdisk "$1"; }
+efinoswap() { echo "g\nn\n\n\n+$2\nn\n\n\n+$3\nn\n\n\n\nw" | fdisk "$1"; }
+
+case $1 in
+	bs) dd if=/dev/zero of="$2"  bs=512  count=1; biosswap $2 $3 $5 $4 ;;
+	bns) dd if=/dev/zero of="$2"  bs=512  count=1; biosnoswap $2 $3 $4 ;;
+	es) dd if=/dev/zero of="$2"  bs=512  count=1; efiswap $2 $3 $5 $4 ;;
+	ens) dd if=/dev/zero of="$2"  bs=512  count=1; efinoswap $2 $3 $4 ;;
+esac
+
+
+
+
+
