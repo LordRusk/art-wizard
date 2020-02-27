@@ -101,28 +101,28 @@ formatdrive() {
 
 		   case $ssp in
 		   	n) ;;
-			*) echo "How big do you want your swap patition? Usually 1.5x your ram"; read sps
+			*) clear; echo "How big do you want your swap patition? Usually 1.5x your ram"; read sps ;;
 		   esac
 
 		   dd if=/dev/zero of="$cdrive"  bs=512  count=1
-		   if [ $bios = efi ] & [ $ssp = n ]; then
+		   if [ "$bios" = "efi" ] && [ "$ssp" = "n" ]; then
 		   	dash ~/li/partitioner ens $cdrive 500mb $rps
 			mkdir /mnt/boot
 			mkdir /mnt/boot/efi
 			mkfs.fat -F32 "$cdrive"1
 			mount "$cdrive"1 /mnt/boot/efi
-		   elif [ $bios = efi ] & [ $ssp != n ]; then
+		   elif [ "$bios" = "efi" ] && [ "$ssp" != "n" ]; then
 		   	dash ~/li/partitioner es $cdrive 500mb $rps $sps
 			mkdir /mnt/boot
 			mkdir /mnt/boot/efi
 			mkfs.fat -F32 "$cdrive"1
 			mount "$cdrive"1 /mnt/boot/efi
-		   elif [ $bios = bios ] & [ $ssp = n ]; then
+		   elif [ "$bios" = "bios" ] && [ "$ssp" = "n" ]; then
 		   	dash ~/li/partitioner bns $cdrive 500mb $rps
 			mkfs.ext4 "$cdrive"1
 			mk dir /mnt/boot
 			mount "$cdrive"1 /mnt/boot
-		  elif [ $bios = bios ] & [ $ssp != n ]; then
+		  elif [ "$bios" = "bios" ] && [ "$ssp" != "n" ]; then
 		   	dash ~/li/partitioner bs $cdrive 500mb $rps $sps
 			mkfs.ext4 "$cdrive"1
 			mk dir /mnt/boot
