@@ -2,7 +2,7 @@
 
 # pre script
 clear
-pacman --needed --noconfirm -Syu git make fzf
+pacman --needed --noconfirm -Syu git make gcc fzf
 git clone https://github.com/JCoMcL/umenu
 cd umenu
 make install
