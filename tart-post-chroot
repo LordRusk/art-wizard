@@ -5,7 +5,7 @@ clear
 pacman -Syu git make fzf
 git clone https://github.com/JCoMcL/umenu
 cd umenu
-sudo make install
+make install
 cd ../
 rm -rf umenu
 
