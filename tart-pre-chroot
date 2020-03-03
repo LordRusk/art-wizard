@@ -53,13 +53,13 @@ elif [ "$auto" = "Wipe drive and (re)install" ]; then
 
 	dd if=/dev/zero of="$cdrive"  bs=512  count=1
 	if [ "$bios" = "efi" ] && [ "$ssp" = "n" ]; then
-		dash ~/li/partitioner ens $cdrive 500mb $rps
+		dash ~/tart/partitioner ens $cdrive 500mb $rps
 		mkdir /mnt/boot
 		mkdir /mnt/boot/efi
 		mkfs.fat -F32 "$cdrive"1
 		mount "$cdrive"1 /mnt/boot/efi
 	elif [ "$bios" = "efi" ] && [ "$ssp" != "n" ]; then
-		dash ~/li/partitioner es $cdrive 500mb $rps $sps
+		dash ~/tart/partitioner es $cdrive 500mb $rps $sps
 		mkdir /mnt/boot
 		mkdir /mnt/boot/efi
 		mkfs.fat -F32 "$cdrive"1
@@ -67,12 +67,12 @@ elif [ "$auto" = "Wipe drive and (re)install" ]; then
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
 	elif [ "$bios" = "bios" ] && [ "$ssp" = "n" ]; then
-		dash ~/li/partitioner bns $cdrive 500mb $rps
+		dash ~/tart/partitioner bns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
 	elif [ "$bios" = "bios" ] && [ "$ssp" != "n" ]; then
-		dash ~/li/partitioner bs $cdrive 500mb $rps $sps
+		dash ~/tart/partitioner bs $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
