@@ -42,7 +42,7 @@ elif [ "$auto" = "Wipe drive and (re)install" ]; then
 
 	clear
 	echo "Do you want a swap partition?"
-	echo "$(echo "Yes\nNo" | umenu)"
+	ssp="$(echo "$(echo "Yes\nNo" | umenu)")"
 	case $ssp in
 		No) ;;
 		Yes)
