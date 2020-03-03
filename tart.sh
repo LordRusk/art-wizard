@@ -16,7 +16,7 @@ case $temp in
 	pacman --noconfirm --needed -Sy dash tcc make patch;
 	git clone https://www.github.com/LordRusk/tart
 	git clone https://github.com/JCoMcL/umenu
-	cp tart/umenu-tcc.diff /umenu
+	cp tart/umenu-tcc.diff umenu/
 	cd umenu
 	patch < umenu-tcc.diff
 	make install
