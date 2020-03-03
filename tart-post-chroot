@@ -1,0 +1,99 @@
+#!/usr/bin/env sh
+
+# pre script
+clear
+pacman -Syu git make fzf
+git clone https://github.com/JCoMcL/umenu
+cd umenu
+sudo make install
+cd ../
+rm -rf umenu
+
+# Loclale
+clear
+echo "Please choose a region and a city"
+echo "Press Enter to continue..."
+read temp
+rg=$(ls /usr/share/zoneinfo | fzf --layout=reverse)
+ct=$(ls /usr/share/zoneinfo/"$rg" | fzf --layout=reverse)
+ln -sf /usr/share/zoneinfo/"$rg"/"$ct" /etc/localtime
+hwclock --systohc
+
+clear
+echo "Uncomment the locales you need"
+echo "Press Enter to continue..."
+read temp
+$editor /etc/locale.gen
+locale-gen
+
+# Bootloader
+clear
+echo "Would you like to install a bootloader? Y/n"
+read temp
+case $temp in
+	n) ;;
+	*) case $bios in
+		Bios)
+		clear
+		echo "these are the currently only supported bootloaders"
+		echo "which bootloader would you like to install?"
+		bootldr="$(echo "grub2\ngrub-legacy (untested)" | umenu)"
+		if [ "$bootldr" = "grub2" ]; then
+			pacman --needed --noconfirm -Syu grub
+			grub-install "$cdrive"
+			grub-mkconfig -o /boot/grub/grub.cfg
+		elif [ "$bootldr" = "grub-legacy (Untested)" ]; then
+			pacman --noconfirm -Syu git fakeroot sudo
+			git clone https://aur.archlinux.org/grub-legacy
+			useradd temp
+			cd grub-legacy
+			sudo -u temp makepkg --noconfirm -si
+			cd ../
+			rm -rf grub-legacy
+			pacman --noconfirm -R git fakeroot sudo
+		fi ;;
+		Efi)
+		clear
+		echo "these are the currently only supported bootloaders"
+		echo "which bootloader would you like to install?"
+		bootldr="$(echo "grub2\nrEFInd" | umenu)"
+		if [ "$bootldr" = "grub2" ]; then
+			pacman --needed --noconfirm -Syu grub efibootmgr
+			grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+			grub-mkconfig -o /boot/grub/grub.cfg
+		elif [ "$bootldr" = "rEFInd" ]; then
+			pacman --noconfirm -Syu refind-efi efibootmgr
+			refind --usedefualts $cdrive --alldrivers
+		fi ;;
+	esac
+esac
+
+# User creation and password stuff
+clear
+echo "Would you like to create a user?"
+cu=$(echo "Create User\nSkip" | umenu)
+if [ "$cu" = "Create User" ]; then
+	clear
+	echo "Please enter the name of your new user"
+	read name
+	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
+		clear
+		echo "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _."
+		read name
+	done
+	useradd -m -g wheel "$name"
+	pmsg="Enter a password for the user"
+	sup() { clear; echo "$pmsg"; passwd "$name" || rsup; }
+	rsup() { pmsg="The password you entered was incorrect, please enter a new password"; sup; }
+	sup
+fi
+clear
+echo "Would you like to set a root password"
+srp=$(echo "Set Root Password\nSkip" | umenu)
+if [ "$srp" = "Set Root Password" ]; then
+	pmsg="Enter a password for root"
+	srp() { clear; echo "$pmsg"; passwd root || rsrp; }
+	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
+	srp
+fi
+

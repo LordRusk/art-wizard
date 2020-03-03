@@ -102,16 +102,15 @@ esac
 # Install
 clear
 case $OS in
-	Arch) pacstrap /mnt linux linux-firmware base ;;
+	Arch) pacstrap /mnt linux linux-firmware base dash $editor ;;
 	Artix) case $init in
-		Openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc ;;
-		Runit) basestrap /mnt linux linux-firmware base elogind-runit runit ;;
-		s6) basestrap /mnt linux linux-firmware base elogind-s6 s6 ;;
+		Openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc dash $editor ;;
+		Runit) basestrap /mnt linux linux-firmware base elogind-runit runit dash $editor ;;
+		s6) basestrap /mnt linux linux-firmware base elogind-s6 s6 dash $editor ;;
 	esac ;;
 esac
 
 # Post Install
-
 case $OS in
 	Arch)
 	genfstab -U -p /mnt >> /mnt/etc/fstab
@@ -119,7 +118,12 @@ case $OS in
 	export OS
 	export bios
 	export editor
-	export cdrive ;;
+	export cdrive
+
+	cp ~/tart/tart-post-chroot /mnt
+	arch-chroot /mnt dash tart-post-chroot
+	rm /mnt/tart-post-chroot
+	;;
 
 	Artix)
 	fstabgen -U -p /mnt >> /mnt/etc/fstab
@@ -128,6 +132,12 @@ case $OS in
 	export bios
 	export editor
 	export cdrive
-	export init ;;
+	export init
+
+	cp ~/tart/tart-post-chroot /mnt
+	artools-chroot /mnt dash tart-post-chroot
+	rm /mnt/tart-post-chroot
+	;;
+
 esac
 
