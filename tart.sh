@@ -3,7 +3,8 @@
 # Welcome
 clear
 echo "Welcome to the Tiny Art Installer"
-echo "This script makes it easy and fast to install Arch or Artix while meeting many needs you may have."
+echo "This script makes it fast and easy and fast to install Arch or Artix while meeting many needs you may have."
+echo "Any programs that are needed and installed by the script that are not needed afterwords will be removed from your install"
 echo "Press Enter to continue..."
 read temp
 
