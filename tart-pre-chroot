@@ -123,6 +123,14 @@ case $OS in
 	cp ~/tart/tart-post-chroot /mnt
 	arch-chroot /mnt dash tart-post-chroot
 	rm /mnt/tart-post-chroot
+
+	clear
+	echo "Would you like to restart now? Y/n"
+	read temp
+	case $temp in
+		n) ;;
+		*) restart ;;
+	esac
 	;;
 
 	Artix)
@@ -137,6 +145,14 @@ case $OS in
 	cp ~/tart/tart-post-chroot /mnt
 	artools-chroot /mnt dash tart-post-chroot
 	rm /mnt/tart-post-chroot
+
+	clear
+	echo "Would you like to restart now? Y/n"
+	read temp
+	case $temp in
+		n) ;;
+		*) restart ;;
+	esac
 	;;
 
 esac
