@@ -129,7 +129,7 @@ case $OS in
 	read temp
 	case $temp in
 		n) ;;
-		*) restart ;;
+		*) reboot ;;
 	esac
 	;;
 
@@ -151,7 +151,7 @@ case $OS in
 	read temp
 	case $temp in
 		n) ;;
-		*) restart ;;
+		*) reboot ;;
 	esac
 	;;
 
