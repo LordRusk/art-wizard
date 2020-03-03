@@ -92,7 +92,7 @@ case $OS in
 	clear
 	echo "The Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
 	read temp
-	$editor /etc/mirrorlist ;;
+	$editor /etc/pacman.d/mirrorlist ;;
 	Artix)
 	clear
 	echo "Which init system would you like to install?"
@@ -100,6 +100,7 @@ case $OS in
 esac
 
 # Install
+clear
 case $OS in
 	Arch) pacstrap /mnt linux linux-firmware base ;;
 	Artix) case $init in
@@ -129,9 +130,4 @@ case $OS in
 	export cdrive
 	export init ;;
 esac
-
-
-
-
-
 
