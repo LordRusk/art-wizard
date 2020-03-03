@@ -1,0 +1,11 @@
+--- umenu/Makefile	2020-03-03 03:21:14.995192498 +0000
++++ umenu-tcc	2020-03-03 03:26:42.701864022 +0000
+@@ -3,7 +3,7 @@
+ all: menu.o
+
+ menu.o:
+-	$(CC) -o menu.o menu.c
++	tcc -o menu.o menu.c
+ install: menu.o
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin
+ 	cp menu.o $(DESTDIR)$(PREFIX)/bin/umenu

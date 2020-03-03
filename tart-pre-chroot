@@ -1,0 +1,139 @@
+#!/usr/bin/env sh
+
+# Pre Script
+clear
+echo "Are you installinst on Arch or Artix?"
+OS="$(echo "Arch\nArtix" | umenu)"
+
+clear
+echo "Which editer would you prefer?"
+editor="$(echo "vim\nnano" | umenu)"
+pacman --needed --noconfirm -Sy $editor
+
+clear
+echo "Are you installing on an Bios or (U)EFI machine?"
+bios="$(echo "Bios\nEfi" | umenu)"
+
+clear
+echo "Would you like to configure the drives yourself or completely wipe the drive and do a complete (re)install?"
+auto="$(echo "Configure drive yourself\nWipe drive and (re)install" | umenu)"
+case $auto in
+	Configure drive yourself)
+	clear
+	if [ $bios = "Bios" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot"
+	elif [ $bios = "Efi" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot/efi"; fi
+	echo "General rule of thumb, root partition is mounted at /mnt"
+	echo "and home pertition (if you have one) is mounted at /mnt/home"
+	bash
+	wait
+
+	clear
+	echo "Please select the drive you would like to install $OS to:"
+	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
+	cdrive=$(echo "$sdrive" | awk '{print $1}')
+	;;
+	Wipe drive and (re)install)
+	clear
+	echo "Please select the drive you would like to install $OS to:"
+	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
+	cdrive=$(echo "$sdrive" | awk '{print $1}')
+
+	clear
+	echo "How big do you want your root partition to be? (30gb,50gb,etc)"
+	read rps
+
+	clear
+	echo "Do you want a swap partition?"
+	echo "$(echo "Yes\nNo" | umenu)"
+	case $ssp in
+		No) ;;
+		Yes)
+	     	clear
+	     	echo "How big do you want your swap patition? Usually 1.5x your ram"
+		read sps ;;
+	esac
+
+	dd if=/dev/zero of="$cdrive"  bs=512  count=1
+	if [ "$bios" = "efi" ] && [ "$ssp" = "n" ]; then
+		dash ~/li/partitioner ens $cdrive 500mb $rps
+		mkdir /mnt/boot
+		mkdir /mnt/boot/efi
+		mkfs.fat -F32 "$cdrive"1
+		mount "$cdrive"1 /mnt/boot/efi
+	elif [ "$bios" = "efi" ] && [ "$ssp" != "n" ]; then
+		dash ~/li/partitioner es $cdrive 500mb $rps $sps
+		mkdir /mnt/boot
+		mkdir /mnt/boot/efi
+		mkfs.fat -F32 "$cdrive"1
+		mount "$cdrive"1 /mnt/boot/efi
+		mkswap "$cdrive"2
+		swapon "$cdrive"2
+	elif [ "$bios" = "bios" ] && [ "$ssp" = "n" ]; then
+		dash ~/li/partitioner bns $cdrive 500mb $rps
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/boot
+		mount "$cdrive"1 /mnt/boot
+	elif [ "$bios" = "bios" ] && [ "$ssp" != "n" ]; then
+		dash ~/li/partitioner bs $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/boot
+		mount "$cdrive"1 /mnt/boot
+		mkswap "$cdrive"2
+		swapon "$cdrive"2
+	fi
+	mkfs.ext4 "$cdrive"3
+	mkfs.ext4 "$cdrive"4
+	mount "$cdrive"3 /mnt
+	mkdir /mnt/home
+	mount "$cdrive"4 /mnt/home
+esac
+
+# Mirrorlist || Init System
+case $OS in
+	Arch)
+	clear
+	echo "The Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
+	read temp
+	$editor /etc/mirrorlist ;;
+	Artix)
+	clear
+	echo "Which init system would you like to install?"
+	init="$(echo "Openrc\nRunit\ns6" | umenu)"
+esac
+
+# Install
+case $OS in
+	Arch) pacstrap /mnt linux linux-firmware base ;;
+	Artix) case $init in
+		Openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc ;;
+		Runit) basestrap /mnt linux linux-firmware base elogind-runit runit ;;
+		s6) basestrap /mnt linux linux-firmware base elogind-s6 s6 ;;
+	esac ;;
+esac
+
+# Post Install
+
+case $OS in
+	Arch)
+	genfstab -U -p /mnt >> /mnt/etc/fstab
+
+	export OS
+	export bios
+	export editor
+	export cdrive ;;
+
+	Artix)
+	fstabgen -U -p /mnt >> /mnt/etc/fstab
+
+	export OS
+	export bios
+	export editor
+	export cdrive
+	export init ;;
+esac
+
+
+
+
+
+
