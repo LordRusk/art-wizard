@@ -2,7 +2,12 @@
 
 # pre script
 clear
-pacman --needed --noconfirm -Syu git make gcc fzf
+echo "Would you like gcc to be the defualt C compiler or would you like to install tcc and symlink tcc to /usr/bin/gcc?"
+ccomp="$(echo "gcc\ntcc" | umenu)"
+case $ccomp in
+	gcc) pacman --needed --noconfirm -Syu git make gcc fzf ;;
+	tcc) pacman --needed --noconfirm -Syu git make tcc fzf; ln -sfT tcc /usr/bin/gcc ;;
+esac
 git clone https://github.com/JCoMcL/umenu
 cd umenu
 make install
