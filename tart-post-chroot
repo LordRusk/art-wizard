@@ -7,7 +7,7 @@ echo "1) gcc\n2) tcc"
 read ccomp
 case $ccomp in
 	1) pacman --needed --noconfirm -Syu git make gcc fzf ;;
-	2) pacman --needed --noconfirm -Syu git make tcc fzf; ln -sfT tcc /usr/bin/gcc ;;
+	2) pacman --needed --noconfirm -Syu git make gcc tcc fzf; ln -sfT tcc /usr/bin/gcc ;;
 esac
 git clone https://github.com/JCoMcL/umenu
 cd umenu
