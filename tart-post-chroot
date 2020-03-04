@@ -2,13 +2,7 @@
 
 # pre script
 clear
-echo "Would you like gcc to be the defualt C compiler or would you like to install tcc and symlink tcc to /usr/bin/gcc?"
-echo "1) gcc\n2) tcc"
-read ccomp
-case $ccomp in
-	1) pacman --needed --noconfirm -Syu git make gcc fzf ;;
-	2) pacman --needed --noconfirm -Syu git make gcc tcc fzf; ln -sfT tcc /usr/bin/gcc ;;
-esac
+pacman --needed --noconfirm -Syu git make gcc fzf
 git clone https://github.com/JCoMcL/umenu
 cd umenu
 make install
@@ -120,7 +114,7 @@ if [ $sudo = "Sudo" ]; then
 elif [ $sudo = "Doas" ]; then
 	git clone https://github.com/slicer69/doas
 	cd doas
-	sudo make install
+	make install
 	cd ../
 	rm -rf doas/
 
