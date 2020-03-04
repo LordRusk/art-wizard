@@ -98,8 +98,42 @@ if [ "$srp" = "Set Root Password" ]; then
 fi
 
 # Sudo || Doas
+clear
+echo "Would you like to install sudo or doas?"
+sudo="$(echo "Sudo\nDoas\nNo" | umenu )"
+if [ $sudo = "Sudo" ]; then
+	pacman --needed --noconfirm -S sudo
 
+	clear
+	echo "Would you like to edit the sudoers file? (User created in wheel group) (/etc/sudoers) Y/n"
+	read temp
+	case $temp in
+		n) ;;
+		*) $editor /etc/sudoers ;;
+	esac
+elif [ $sudo = "doas" ]; then
+	git clone https://github.com/slicer69/doas
+	cd doas
+	sudo make install
+	cd ../
+	rm -rf doas/
 
+	clear
+	echo "Would you like to copy a template doas config file? Y/n"
+	read temp
+	case $temp in
+		n) ;;
+		*) cp ~/tart/doas-template /usr/local/etc/doas.conf ;;
+	esac
+
+	clear
+	echo "Would you like to edit the doas config file? (/usr/local/etc/doas.conf) Y/n"
+	read temp
+	case temp in
+		n) ;;
+		*) $editor /usr/local/etc/doas.conf ;;
+	esac
+fi
 
 # Post Script
 pacman -R git gcc make fzf umenu
