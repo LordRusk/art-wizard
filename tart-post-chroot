@@ -111,7 +111,7 @@ if [ $sudo = "Sudo" ]; then
 		n) ;;
 		*) $editor /etc/sudoers ;;
 	esac
-elif [ $sudo = "doas" ]; then
+elif [ $sudo = "Doas" ]; then
 	git clone https://github.com/slicer69/doas
 	cd doas
 	sudo make install
