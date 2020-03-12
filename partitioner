@@ -24,8 +24,3 @@ case $1 in
 	es) dd if=/dev/zero of="$2"  bs=512  count=1; efiswap $2 $3 $5 $4 ;;
 	ens) dd if=/dev/zero of="$2"  bs=512  count=1; efinoswap $2 $3 $4 ;;
 esac
-
-
-
-
-
