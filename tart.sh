@@ -17,6 +17,5 @@ cd umenu
 patch < umenu-tcc.diff
 make install
 cd ../
-cd tart
-dash tart-pre-chroot
+dash tart/tart-pre-chroot
 
