@@ -4,7 +4,7 @@ clear
 cat << EOF
 Welcome to The Art Wizard,
 --------------------------
-This wzard is here to help
+This wizard is here to help
 you install Arch or Artix
 fast, easy, and with as
 much customazation as
