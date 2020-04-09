@@ -1,0 +1,158 @@
+#!/usr/bin/env sh
+
+# Locale
+print "\n$divider"
+printf "\nPlease choose a region and a city\nPress Enter to continue..."
+read tmp >/dev/null
+rg=$(ls /usr/share/zoneinfo | fzf --layout=reverse)
+ct=$(ls /usr/share/zoneinfo/"$rg" | fzf --layout=reverse)
+ln -sf /usr/share/zoneinfo/"$rg"/"$ct" /etc/localtime
+hwclock --systohc
+
+printf "\n$divider"
+printf "\nUncomment the locales you need\nPress Enter to continue..."
+read tmp >/dev/null
+$editor /etc/locale.gen
+locale-gen
+
+# Bootloader
+printf "\n$diver"
+printf "\nWould you like to install a bootloader? [Y/n]"
+read -r tmp
+case $tmp in
+	[Nn]) break;;
+	*) case $bios in
+		bios) \
+		while : ; do
+			printf "Would you like to install 'grub' or 'grub-legacy' (untested)?"
+			read -r bootldr
+			case $bootldr in
+				[Gg][Rr][Uu][Bb]) bootldr="grub" ;;
+				[Gg][Rr][Uu][Bb]\-[Ll][Ee][Gg][Aa][Cc][Yy]) bootldr="grub-legacy" ;;
+				*) printf "Please answer either 'grub' or 'grub-legacy'"
+			esac
+		done
+
+		# Code block for installing
+		# a boot manager on a bios
+		# machine.
+		if [ "$bootldr" = "grub" ]; then
+			pacman --needed --noconfirm -Syu grub
+			grub-install "$cdrive"
+			grub-mkconfig -o /boot/grub/grub.cfg
+		elif [ "$bootldr" = "grub-legacy" ]; then
+			pacman --noconfirm -Syu git fakeroot sudo
+			git clone https://aur.archlinux.org/grub-legacy
+			useradd tmp
+			cd grub-legacy
+			sudo -u tmp makepkg --noconfirm -si
+			cd ../
+			rm -rf grub-legacy
+			pacman --noconfirm -R git fakeroot sudo
+		fi ;;
+		efi) \
+		while : ; do
+			printf "Would you like to install 'grub' or 'refind'?"
+			read -r bootldr
+			case $bootldr in
+				[Gg][Rr][Uu][Bb]) bootldr="grub" ;;
+				[Rr][Ee][Ff][Ii][Nn][Dd]) bootldr="refind" ;;
+				*) printf "Please answer either 'grub' or 'refind'"
+			esac
+		done
+
+		# Code block for installing
+		# a boot manager on a efi
+		# machine.
+		if [ "$bootldr" = "grub" ]; then
+			pacman --needed --noconfirm -Syu grub efibootmgr
+			grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
+			grub-mkconfig -o /boot/grub/grub.cfg
+		elif [ "$bootldr" = "refind" ]; then
+			pacman --noconfirm -Syu refind-efi efibootmgr
+			refind --usedefualts $cdrive --alldrivers
+		fi ;;
+	esac
+esac
+
+# Added user and user password
+printf "\n$divider"
+printf "\nWould you like to create a user? [Y/n]"
+read -r cu
+case $cu in
+	[Nn]) break;;
+	*) \
+	printf "Please enter the name of your new user"
+	read -r name
+	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
+		clear
+		printf "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _."
+		read -r name
+	done
+	useradd -m -g wheel "$name"
+	pmsg="Enter a password for the user"
+	sup() { printf "$pmsg"; passwd "$name" || rsup; }
+	rsup() { pmsg="The password you entered was incorrect, please enter a new password"; sup; }
+	sup
+esac
+
+# Setting the root password
+printf "\n$divder"
+printf "\nWould you like to set a root password [Y/n]"
+read -r srp
+case $srp in
+	[Nn]) break;;
+	*) \
+	pmsg="Enter a password for root"
+	srp() { printf "$pmsg"; passwd root || rsrp; }
+	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
+	srp
+esac
+
+# Sudo || Doas
+printf "\n$divider"
+printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]"
+read -r sudo
+case $sudo in
+	[Ss][Uu][Dd][Oo]) sudo="sudo" ;;
+	[Dd][Oo][Aa][Ss]) sudo="doas" ;;
+esac
+
+if [ $sudo = "sudo" ]; then
+	pacman --needed --noconfirm -S sudo
+
+	printf "\n$divder"
+	printf 'Would you like to edit the sudoers file? (User created in wheel group) (/etc/sudoers) [Y/n]'
+	read -r tmp
+	case $tmp in
+		[Nn]) ;;
+		*) $editor /etc/sudoers ;;
+	esac
+elif [ $sudo = "doas" ]; then
+	git clone https://github.com/slicer69/doas
+	cd doas
+	pacman -S make
+	make install
+	pacman -R make
+	cd ../
+	rm -rf doas/
+	mkdir -p /usr/local/etc/
+
+	printf "\n$divder"
+	printf "\nWould you like to copy a tmplate doas config file? [Y/n]"
+	read -r tmp
+	case $tmp in
+		[Nn]) ;;
+		*) cp ~/tart/doas-tmplate /usr/local/etc/doas.conf ;;
+	esac
+
+	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) Y/n'
+	read -r tmp
+	case $tmp in
+		[Nn]) ;;
+		*) $editor /usr/local/etc/doas.conf ;;
+	esac
+fi
+
+# Post Script
+pacman -R fzf

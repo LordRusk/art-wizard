@@ -1,0 +1,7 @@
+# Whichever one you do not use, comment out or expect error hell.
+
+# Permit User to doas root
+permit <usr> as root
+
+# Same thing without password
+permit nopass <user> as root
