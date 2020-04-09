@@ -6,58 +6,57 @@ divider="--------------"
 # User defined variables
 clear
 while : ; do
-	printf 'Are you installinst on Arch or Artix?'
+	printf 'Are you installing on Arch or Artix: '
 	read -r OS
 	case $OS in
-		[Aa][Rr][Cc][Hh]) OS="arch" ;;
-		[Aa][Rr][Tt][Ii][Xx]) OS="artix" ;;
-		*) printf 'Please answer either Arch or Artix' ;;
+		[Aa][Rr][Cc][Hh]) OS="arch"; break ;;
+		[Aa][Rr][Tt][Ii][Xx]) OS="artix"; break ;;
+		*) printf '\nPlease answer either Arch or Artix\n' ;;
 	esac
 done
 
-
-printf "\n$divider"
+printf "\n$divider\n"
 while : ; do
-	printf "\nDo you prefer vim or nano as a text editor?"
+	printf "\nDo you prefer vim or nano as a text editor: "
 	read -r editor
 	case $editor in
-		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim; editor="vim" ;;
-		[Nn][Aa][Nn][Oo]) editor="nano" ;;
-		*) printf "Please answer either 'vim' or 'nano'" ;;
+		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim; editor="vim"; break;;
+		[Nn][Aa][Nn][Oo]) editor="nano"; break;;
+		*) printf "\nPlease answer either 'vim' or 'nano'\n" ;;
 	esac
 done
 
-printf "\n$divider"
+printf "\n$divider\n"
 while : ; do
-	printf "\nAre you installing on a 'Bios' or a 'Efi' machine?"
+	printf "\nAre you installing on a 'Bios' or a 'Efi' machine: "
 	read -r bios
 	case $bios in
-		[Bb][Ii][Oo][Ss]) bios="bios" ;;
-		[Ee][Ff][Ii]) bios="efi" ;;
-		*) printf "Pease answer 'Bios' or 'Efi'" ;;
+		[Bb][Ii][Oo][Ss]) bios="bios"; break;;
+		[Ee][Ff][Ii]) bios="efi"; break;;
+		*) printf "\nPlease answer 'Bios' or 'Efi'\n";;
 	esac
 done
 
 # Configure and format partitions
-printf "\n$divider"
+printf "\n$divider\n"
 while : ; do
-	printf "Would you like to configure the drives yourself or completely wipe the drive and do a complete (re)install? [Configure/Auto]"
+	printf "\nWould you like to configure the drives yourself or completely wipe the drive and do a complete (re)install? [Configure/Auto]: "
 	read -r auto
 	case $auto in
-		[Cc][Oo][Nn][Ff][Ii][Gg][Uu][Rr][Ee]) auto="configure" ;;
-		[Aa][Uu][Tt][Oo]) auto="auto" ;;
-		*) printf "Please answer either 'Configure' or 'Auto'" ;;
+		[Cc][Oo][Nn][Ff][Ii][Gg][Uu][Rr][Ee]) auto="configure"; break;;
+		[Aa][Uu][Tt][Oo]) auto="auto"; break;;
+		*) printf "\nPlease answer either 'Configure' or 'Auto'\n" ;;
 	esac
 done
 
 # Give tips and a zsh menu for user
 # configred partition schemes.
 if [ "$auto" = "configure" ]; then
-	printf "\n$divider"
-	[ $bios = "bios" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /mnt/boot"
+	printf "\n$divider\n"
+	[ $bios = "bios" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /mnt/boot\n"
 	[ $bios = "efi" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /esp"
-	printf 'General rule of thumb, root partition is mounted at /mnt'
-	printf 'and home pertition (if you have one) is mounted at /mnt/home'
+	printf "General rule of thumb, root partition is mounted at /mnt\n"
+	printf "and home pertition (if you have one) is mounted at /mnt/home\n"
 	zsh
 	wait
 
@@ -71,18 +70,18 @@ elif [ "$auto" = "auto" ]; then
 	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
 	cdrive=$(echo "$sdrive" | awk '{print $1}')
 
-	printf "\n$divider"
+	printf "\n$divider\n"
 	while : ; do
-		printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
+		printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
 		read -r rps
-		while ! echo "$rps" | grep -o "[0-9]+[[Aa]-[Zz]]+"; do
+		while ! echo "$rps" | grep -o "[0-9]+[a-z]+"; do
 			printf 'Not acceptable size!'
 			printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
 			read -r rps
 		done
 	done
 
-	printf "\n$divider"
+	printf "\n$divider\n"
 	while : ; do
 		printf "\nDo you want a swap partition? [y/N]"
 		read -r ssp
@@ -91,7 +90,7 @@ elif [ "$auto" = "auto" ]; then
  			ssp="y"
 			printf 'How big do you want your swap patition? Usually 1.5x your ram'
 			read -r sps
-			while ! echo "$sps" | grep -o "[0-9]+[[Aa]-[Zz]]"; do
+			while ! echo "$sps" | grep -o "[0-9]+-[a-z]+"; do
 				printf 'Not acceptable size!'
 				printf 'How big do you want your swap patition? Usually 1.5x your ram'
 				read -r rps
@@ -101,14 +100,14 @@ elif [ "$auto" = "auto" ]; then
 	done
 
 	[ "$bios" = "bios" ] && \
-		printf "\n$divider"
+		printf "\n$divider\n"
 		while : ; do
-			printf "Do you want a 'dos' or a 'gpt' partition scheme? [dos/gpt]"
+			printf "\nDo you want a 'dos' or a 'gpt' partition scheme? [dos/gpt]: "
 			read -r ps
 			case $ps in
-				[Dd][Oo][Ss]) ps="dos" ;;
-				[Gg][Pp][Tt]) ps="gpt" ;;
-				*) printf "Unkown or unsupported partition scheme, please answer either 'dos' or 'gpt'" ;;
+				[Dd][Oo][Ss]) ps="dos"; break;;
+				[Gg][Pp][Tt]) ps="gpt"; break;;
+				*) printf "\nUnkown or unsupported partition scheme, please answer either 'dos' or 'gpt'\n" ;;
 			esac
 		done
 
@@ -130,7 +129,7 @@ elif [ "$auto" = "auto" ]; then
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
-	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "dos" ]then
+	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "dos" ]; then
 		sh ~/tart/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
@@ -142,7 +141,7 @@ elif [ "$auto" = "auto" ]; then
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
-	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]then
+	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]; then
 		sh ~/tart/bin/partitioner gs $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
@@ -159,7 +158,7 @@ elif [ "$auto" = "auto" ]; then
 fi
 
 # Mirrorlist || Init System
-printf "\n$divider"
+printf "\n$divider\n"
 case $OS in
 	arch) \
 	printf "\nThe Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
@@ -204,7 +203,7 @@ case $OS in
 	arch-chroot /mnt sh tart-post-chroot
 	rm /mnt/tart-post-chroot
 
-	printf "\n$divider"
+	printf "\n$divider\n"
 	printf "\nWould you like to restart now? Y/n"
 	read -r tmp
 	case $tmp in
@@ -227,7 +226,7 @@ case $OS in
 	artools-chroot /mnt sh tart-post-chroot
 	rm /mnt/tart-post-chroot
 
-	printf "\n$divider"
+	printf "\n$divider\n"
 	printf "\nWould you like to restart now? Y/n"
 	read tmp
 	case $tmp in
