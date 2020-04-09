@@ -20,7 +20,7 @@ while : ; do
 	printf "\nDo you prefer vim or nano as a text editor: "
 	read -r editor
 	case $editor in
-		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim>/dev/null 2>&1; printf "\nInstalling vim..." editor="vim"; break;;
+		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim>/dev/null 2>&1 & printf "Installing vim..." editor="vim"; break;;
 		[Nn][Aa][Nn][Oo]) editor="nano"; break;;
 		*) printf "\nPlease answer either 'vim' or 'nano'\n" ;;
 	esac
