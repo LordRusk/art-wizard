@@ -1,28 +1,63 @@
 #!/usr/bin/env sh
 
-# Pre Script
-clear
-echo "Are you installinst on Arch or Artix?"
-OS="$(echo "Arch\nArtix" | umenu)"
+# Variables and script settings
+divider="--------------"
 
+# User defined variables
 clear
-echo "Which editer would you prefer?"
-editor="$(echo "vim\nnano" | umenu)"
-pacman --needed --noconfirm -Sy $editor
+while : ; do
+	printf 'Are you installinst on Arch or Artix?'
+	read -r OS
+	case $OS in
+		[Aa][Rr][Cc][Hh]) OS="arch" ;;
+		[Aa][Rr][Tt][Ii][Xx]) OS="artix" ;;
+		*) printf 'Please answer either Arch or Artix' ;;
+	esac
+done
 
-clear
-echo "Are you installing on an Bios or (U)EFI machine?"
-bios="$(echo "Bios\nEfi" | umenu)"
 
-clear
-echo "Would you like to configure the drives yourself or completely wipe the drive and do a complete (re)install?"
-auto="$(echo "Configure drive yourself\nWipe drive and (re)install" | umenu)"
-if [ "$auto" = "Configure drive yourself" ]; then
-	clear
-	if [ $bios = "Bios" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot"
-	elif [ $bios = "Efi" ]; then echo "If you're going to (re)install grub, mount your boot partition at /mnt/boot/efi"; fi
-	echo "General rule of thumb, root partition is mounted at /mnt"
-	echo "and home pertition (if you have one) is mounted at /mnt/home"
+printf "\n$divider"
+while : ; do
+	printf "\nDo you prefer vim or nano as a text editor?"
+	read -r editor
+	case $editor in
+		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim; editor="vim" ;;
+		[Nn][Aa][Nn][Oo]) editor="nano" ;;
+		*) printf 'Please answer either vim or nano' ;;
+	esac
+done
+
+printf "\n$divider"
+while : ; do
+	printf "\nAre you installing on a Bios or a Efi machine?"
+	read -r bios
+	case $bios in
+		[Bb][Ii][Oo][Ss]) bios="bios" ;;
+		[Ee][Ff][Ii]) bios="efi" ;;
+		*) printf 'Pease answer Bios or Efi' ;;
+	esac
+done
+
+# Configure and format partitions
+printf "\n$divider"
+while : ; do
+	printf "Would you like to configure the drives yourself or completely wipe the drive and do a complete (re)install? [Configure/Auto]"
+	read -r auto
+	case $auto in
+		[Cc][Oo][Nn][Ff][Ii][Gg][Uu][Rr][Ee]) auto="configure" ;;
+		[Aa][Uu][Tt][Oo]) auto="auto" ;;
+		*) printf 'Please answer either Configure or Auto' ;;
+	esac
+done
+
+# Give tips and a zsh menu for self
+# user configuration
+if [ "$auto" = "configure" ]; then
+	printf "\n$divider"
+	[ $bios = "bios" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /mnt/boot"
+	[ $bios = "efi" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /esp"
+	printf 'General rule of thumb, root partition is mounted at /mnt'
+	printf 'and home pertition (if you have one) is mounted at /mnt/home'
 	zsh
 	wait
 
@@ -30,54 +65,91 @@ if [ "$auto" = "Configure drive yourself" ]; then
 	echo "Please select the drive you would like to install $OS to:"
 	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
 	cdrive=$(echo "$sdrive" | awk '{print $1}')
-elif [ "$auto" = "Wipe drive and (re)install" ]; then
+elif [ "$auto" = "auto" ]; then
 	clear
 	echo "Please select the drive you would like to install $OS to:"
 	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
 	cdrive=$(echo "$sdrive" | awk '{print $1}')
 
-	clear
-	echo "How big do you want your root partition to be? (30gb,50gb,etc)"
-	read rps
+	printf "\n$divider"
+	while : ; do
+		printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
+		read -r rps
+		while ! echo "$rps" | grep -o "[0-9]+[[Aa]-[Zz]]"; do
+			printf 'Not acceptable size!'
+			printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
+			read -r rps
+		done
+	done
 
-	clear
-	echo "Do you want a swap partition?"
-	ssp="$(echo "$(echo "Yes\nNo" | umenu)")"
-	case $ssp in
-		No) ;;
-		Yes)
-	     	clear
-	     	echo "How big do you want your swap patition? Usually 1.5x your ram"
-		read sps ;;
-	esac
+	printf "\n$divider"
+	while : ; do
+		printf "\nDo you want a swap partition? [y/N]"
+		read -r ssp
+		case $ssp in
+			[Yy]) \
+ 			ssp="y"
+			printf 'How big do you want your swap patition? Usually 1.5x your ram'
+			read -r sps
+			while ! echo "$sps" | grep -o "[0-9]+[[Aa]-[Zz]]"; do
+				printf 'Not acceptable size!'
+				printf 'How big do you want your swap patition? Usually 1.5x your ram'
+				read -r rps
+			done
 
+		esac
+	done
+
+	[ "$bios" = "bios" ] && \
+		printf "\n$divider"
+		while : ; do
+			printf 'Do you want a dos or a gpt partition scheme? [dos/gpt]'
+			read -r ps
+			case $ps in
+				[Dd][Oo][Ss]) ps="dos" ;;
+				[Gg][Pp][Tt]) ps="gpt" ;;
+				*) printf "Unkown or unsupported partition scheme, please answer either 'dos' or 'gpt'" ;;
+			esac
+		done
+
+	# Big O'l code block for auto partitioning
+	# using the partitioner script.
 	dd if=/dev/zero of="$cdrive"  bs=512  count=1
-	if [ "$bios" = "Efi" ] && [ "$ssp" = "No" ]; then
-		dash ~/tart/partitioner ens $cdrive 500mb $rps
-		mkdir /mnt/boot
-		mkdir /mnt/boot/efi
+	if [ "$bios" = "efi" ] && [ "$ssp" != "y" ]; then
+		sh ~/tart/partitioner gns $cdrive 500mb $rps
 		mkfs.fat -F32 "$cdrive"1
-		mount "$cdrive"1 /mnt/boot/efi
-	elif [ "$bios" = "Efi" ] && [ "$ssp" != "No" ]; then
-		dash ~/tart/partitioner es $cdrive 500mb $rps $sps
-		mkdir /mnt/boot
-		mkdir /mnt/boot/efi
+		mount "$cdrive"1 /esp
+	elif [ "$bios" = "efi" ] && [ "$ssp" = "y" ]; then
+		sh ~/tart/partitioner gs $cdrive 500mb $rps $sps
 		mkfs.fat -F32 "$cdrive"1
-		mount "$cdrive"1 /mnt/boot/efi
+		mount "$cdrive"1 /esp
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-	elif [ "$bios" = "Bios" ] && [ "$ssp" = "No" ]; then
-		dash ~/tart/partitioner bns $cdrive 500mb $rps
+	elif [ "$bios" = "bios" ] && [ "$ssp" != "y" ] && [ "$ps" = "dos" ]; then
+		sh ~/tart/partitioner dns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
-	elif [ "$bios" = "Bios" ] && [ "$ssp" != "No" ]; then
-		dash ~/tart/partitioner bs $cdrive 500mb $rps $sps
+	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ];  || [ "$ps" = "dos" ]then
+		sh ~/tart/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
+	elif [ "$bios" = "bios" ] && [ "$ssp" != "y" ] && [ "$ps" = "gpt" ]; then
+		sh ~/tart/partitioner gns $cdrive 500mb $rps
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/boot
+		mount "$cdrive"1 /mnt/boot
+	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ];  || [ "$ps" = "gpt" ]then
+		sh ~/tart/partitioner gs $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/boot
+		mount "$cdrive"1 /mnt/boot
+		mkswap "$cdrive"2
+		swapon "$cdrive"2
+
 	fi
 	mkfs.ext4 "$cdrive"3
 	mkfs.ext4 "$cdrive"4
@@ -87,32 +159,38 @@ elif [ "$auto" = "Wipe drive and (re)install" ]; then
 fi
 
 # Mirrorlist || Init System
+printf "\n$divider"
 case $OS in
-	Arch)
-	clear
-	echo "The Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
-	read temp
+	Arch) \
+	printf "\nThe Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
+	read tmp >/dev/null
 	$editor /etc/pacman.d/mirrorlist ;;
-	Artix)
-	clear
-	echo "Which init system would you like to install?"
-	init="$(echo "Openrc\nRunit\ns6" | umenu)"
+	Artix) \
+	printf "\nWhich init system would you like to install? [Openrc/Runit/s6]"
+	read -r init
+	case $init in
+		[Oo][Pp][Ee][Nn][Rr][Cc]) init="openrc" ;;
+		[Rr][Uu][Nn][Ii][Tt]) init="runit" ;;
+		[Ss]6) init="s6" ;;
+		*) printf 'Please answer either Openrc, Runit, or s6' ;;
+	esac
 esac
 
 # Install
 clear
 case $OS in
-	Arch) pacstrap /mnt linux linux-firmware base dash $editor ;;
-	Artix) case $init in
-		Openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc dash $editor ;;
-		Runit) basestrap /mnt linux linux-firmware base elogind-runit runit dash $editor ;;
+	arch) pacstrap /mnt linux linux-firmware base dash $editor ;;
+	artix) case $init in
+		openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc dash $editor ;;
+		runit) basestrap /mnt linux linux-firmware base elogind-runit runit dash $editor ;;
 		s6) basestrap /mnt linux linux-firmware base elogind-s6 s6 dash $editor ;;
 	esac ;;
 esac
 
 # Post Install
+printf "\n$divider"
 case $OS in
-	Arch)
+	arch)
 	genfstab -U -p /mnt >> /mnt/etc/fstab
 
 	export OS
@@ -124,16 +202,15 @@ case $OS in
 	arch-chroot /mnt dash tart-post-chroot
 	rm /mnt/tart-post-chroot
 
-	clear
-	echo "Would you like to restart now? Y/n"
-	read temp
-	case $temp in
-		n) ;;
+	printf "\nWould you like to restart now? Y/n"
+	read -r tmp
+	case $tmp in
+		n) exit ;;
 		*) reboot ;;
 	esac
 	;;
 
-	Artix)
+	artix)
 	fstabgen -U -p /mnt >> /mnt/etc/fstab
 
 	export OS
@@ -146,14 +223,11 @@ case $OS in
 	artools-chroot /mnt dash tart-post-chroot
 	rm /mnt/tart-post-chroot
 
-	clear
-	echo "Would you like to restart now? Y/n"
-	read temp
-	case $temp in
-		n) ;;
+	printf "\nWould you like to restart now? Y/n"
+	read tmp
+	case $tmp in
+		n) exit ;;
 		*) reboot ;;
 	esac
 	;;
-
 esac
-
