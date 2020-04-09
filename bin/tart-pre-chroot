@@ -45,7 +45,7 @@ while : ; do
 	case $auto in
 		[Cc][Oo][Nn][Ff][Ii][Gg][Uu][Rr][Ee]) auto="configure"; break;;
 		[Aa][Uu][Tt][Oo]) auto="auto"; break;;
-		*) printf "\nPlease answer either 'Configure' or 'Auto'\n" ;;
+		*) printf "\nPlease answer either 'Configure' or 'Auto'" ;;
 	esac
 done
 
@@ -90,7 +90,7 @@ elif [ "$auto" = "auto" ]; then
  			ssp="y"
 			printf 'How big do you want your swap patition? Usually 1.5x your ram'
 			read -r sps
-			while ! echo "$sps" | grep -o "[0-9]+-[a-z]+"; do
+			while ! echo "$sps" | grep -o "[0-9+][a-z+]"; do
 				printf 'Not acceptable size!'
 				printf 'How big do you want your swap patition? Usually 1.5x your ram'
 				read -r rps
