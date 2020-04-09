@@ -20,7 +20,7 @@ while : ; do
 	printf "\nDo you prefer vim or nano as a text editor: "
 	read -r editor
 	case $editor in
-		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim>/dev/null 2>&1 & printf "Installing vim..." editor="vim"; break;;
+		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim>/dev/null 2>&1 & printf "Installing vim...\n" editor="vim"; break;;
 		[Nn][Aa][Nn][Oo]) editor="nano"; break;;
 		*) printf "\nPlease answer either 'vim' or 'nano'\n" ;;
 	esac
@@ -74,7 +74,7 @@ elif [ "$auto" = "auto" ]; then
 	while : ; do
 		printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
 		read -r rps
-		while echo "$rps" | grep -o "[0-9]+,[a-z]+"; do
+		while ! echo "$rps" | grep -o "[0-9]+,[a-z]+"; do
 			printf 'Not acceptable size!'
 			printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
 			read -r rps
