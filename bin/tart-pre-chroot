@@ -70,26 +70,26 @@ elif [ "$auto" = "auto" ]; then
 
 	printf "\n$divider\n"
 	printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
-	read -r rps
+	read -r rps >/dev/null 2>&1
 	while ! echo "$rps" | grep -o "[0-9+][a-z+]"; do
 		printf 'Not acceptable size!\n'
 		printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
-		read -r rps
+		read -r rps >/dev/null 2>&1
 	done
 
 	printf "\n$divider\n"
 	while : ; do
 		printf "\nDo you want a swap partition? [y/N]: "
-		read -r ssp
+		read -r ssp >/dev/null 2>&1
 		case $ssp in
 			[Yy]) \
  			ssp="y"
 			printf 'How big do you want your swap patition? Usually 1.5x your ram: '
-			read -r sps
+			read -r sps >/dev/null 2>&1
 			while ! echo "$sps" | grep -o "[0-9+][a-z+]"; do
 				printf 'Not acceptable size!'
 				printf 'How big do you want your swap patition? Usually 1.5x your ram: '
-				read -r sps
+				read -r sps >/dev/null 2>&1
 			done;break;;
 
 		esac
