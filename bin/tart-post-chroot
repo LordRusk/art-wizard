@@ -118,7 +118,8 @@ case $sudo in
 esac
 
 if [ $sudo = "sudo" ]; then
-	pacman --needed --noconfirm -S sudo
+	printf "Installing sudo...\n"
+	pacman --needed --noconfirm -S sudo >/dev/null 2>&1
 
 	printf "\n$divder"
 	printf "Would you like to edit the sudoers file?\n(User created in wheel group) (/etc/sudoers) [Y/n]: "

@@ -57,6 +57,7 @@ if [ "$auto" = "configure" ]; then
 	[ $bios = "efi" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /esp"
 	printf "General rule of thumb, root partition is mounted at /mnt\n"
 	printf "and home pertition (if you have one) is mounted at /mnt/home\n"
+	printf "NOTICE: You are still in the script. After you are done in the\nzsh prompt, 'exit' and the script will continue.\n"
 	zsh
 	wait
 
