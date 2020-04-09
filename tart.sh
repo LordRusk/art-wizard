@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+clear
 cat << EOF
 Welcome to The Art Wizard,
 --------------------------
