@@ -63,8 +63,7 @@ case $tmp in
 
 		# Code block for installing
 		# a boot manager on a efi
-		# machine.
-		if [ "$bootldr" = "grub" ]; then
+		# machine.  if [ "$bootldr" = "grub" ]; then
 			pacman --needed --noconfirm -Syu grub efibootmgr
 			grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
 			grub-mkconfig -o /boot/grub/grub.cfg
@@ -89,7 +88,6 @@ case $cu in
 		read -r name
 	done
 	useradd -m -g wheel "$name"
-	printf "\n$divider"
 	pmsg="\nEnter a password for the user"
 	sup() { printf "$pmsg"; passwd "$name" || rsup; }
 	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
