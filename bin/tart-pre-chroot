@@ -91,7 +91,7 @@ elif [ "$auto" = "auto" ]; then
 				printf 'How big do you want your swap patition? Usually 1.5x your ram: '
 				read -r sps >/dev/null 2>&1
 			done;break;;
-
+			*) break;;
 		esac
 	done
 
