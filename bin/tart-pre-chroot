@@ -86,13 +86,13 @@ elif [ "$auto" = "auto" ]; then
 		case $ssp in
 			[Yy]) \
  			ssp="y"
-			printf 'How big do you want your swap patition? Usually 1.5x your ram'
+			printf 'How big do you want your swap patition? Usually 1.5x your ram: '
 			read -r sps
 			while ! echo "$sps" | grep -o "[0-9+][a-z+]"; do
 				printf 'Not acceptable size!'
-				printf 'How big do you want your swap patition? Usually 1.5x your ram'
+				printf 'How big do you want your swap patition? Usually 1.5x your ram: '
 				read -r sps
-			done
+			done;break;;
 
 		esac
 	done
