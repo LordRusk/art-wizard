@@ -143,7 +143,7 @@ elif [ $sudo = "doas" ]; then
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;
-		*) cp ~/tart/doas-tmplate /usr/local/etc/doas.conf ;;
+		*) cp ~/tart/share/doas-tmplate /usr/local/etc/doas.conf ;;
 	esac
 
 	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) Y/n'
