@@ -63,7 +63,8 @@ case $tmp in
 
 		# Code block for installing
 		# a boot manager on a efi
-		# machine.  if [ "$bootldr" = "grub" ]; then
+		# machine.
+		if [ "$bootldr" = "grub" ]; then
 			pacman --needed --noconfirm -Syu grub efibootmgr
 			grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
 			grub-mkconfig -o /boot/grub/grub.cfg
