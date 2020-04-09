@@ -16,8 +16,8 @@ $editor /etc/locale.gen
 locale-gen
 
 # Bootloader
-printf "\n$divider"
-printf "\n\nWould you like to install a bootloader? [Y/n]: "
+printf "\n$divider\n"
+printf "\nWould you like to install a bootloader? [Y/n]: "
 read -r tmp
 case $tmp in
 	[Nn]) break;;
@@ -78,8 +78,8 @@ case $tmp in
 esac
 
 # Added user and user password
-printf "\n$divider"
-printf "\n\nWould you like to create a user? [Y/n]: "
+printf "\n$divider\n"
+printf "\nWould you like to create a user? [Y/n]: "
 read -r cu
 case $cu in
 	[Nn]) break;;
@@ -87,30 +87,30 @@ case $cu in
 	printf "Please enter the name of your new user: "
 	read -r name
 	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
-		printf "Username not valid. Give a username beginning with a [letter, with only lowercase letters, - or _]: "
+		printf "Username not valid. Give a username beginning with a\n[letter, with only lowercase letters, - or _]: "
 		read -r name
 	done
 	useradd -m -g wheel "$name"
 	sup() { [ -z "$pmsg" ] || echo "$pmsg"; passwd "$name" || rsup; }
-	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
+	rsup() { pmsg="\nThe password you entered was incorrect, please enter a new password: "; sup; }
 	sup
 esac
 
 # Setting the root password
-printf "\n$divider"
-printf "\n\nWould you like to set a root password [Y/n]: "
+printf "\n$divider\n"
+printf "\nWould you like to set a root password [Y/n]: "
 read -r srp
 case $srp in
 	[Nn]) break;;
 	*) \
 	srp() { [ -z "$pmsg" ] || echo "$pmsg"; passwd root || rsrp; }
-	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
+	rsrp() { pmsg="\nThe password you entered was incorrect, please enter a new password"; srp; }
 	srp
 esac
 
 # Sudo || Doas
-printf "\n$divider"
-printf "\n\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
+printf "\n$divider\n"
+printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
 read -r sudo
 case $sudo in
 	[Ss][Uu][Dd][Oo]) sudo="sudo" ;;
@@ -121,7 +121,6 @@ if [ $sudo = "sudo" ]; then
 	printf "Installing sudo...\n"
 	pacman --needed --noconfirm -S sudo >/dev/null 2>&1
 
-	printf "\n$divder"
 	printf "Would you like to edit the sudoers file?\n(User created in wheel group) (/etc/sudoers) [Y/n]: "
 	read -r tmp
 	case $tmp in
@@ -138,7 +137,7 @@ elif [ $sudo = "doas" ]; then
 	rm -rf doas/
 	mkdir -p /usr/local/etc/
 
-	printf "\n$divder"
+	printf "\n$divder\n"
 	printf "\nWould you like to copy a tmplate doas config file? [Y/n]: "
 	read -r tmp
 	case $tmp in
@@ -154,5 +153,31 @@ elif [ $sudo = "doas" ]; then
 	esac
 fi
 
+printf "\n$divider\n"
+printf "\nWould you like to install NetworkManager? [Y/n]"
+read -r tmp
+case $tmp in
+	[Nn]) exit;;
+	*) \n
+	if [ "$OS" = "arch" ]; then
+		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager >/dev/null 2>&1
+		printf 'Would you like to enable NetworkManager [Y/n]: '
+		read -r $tmp
+		case $tmp in
+			[Nn]) exit;;
+			*) systemctl enable NetworkManager ;;
+		esac
+	elif [ "$OS" = "artix" ]; then
+		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager-"${init}" >/dev/null 2>&1
+		printf 'Would you like to enable NetworkManager [Y/n]: '
+		read -r $tmp
+		case $tmp in
+			[Nn]) exit;;
+			*) \
+			[ "$init" = "openrc" ] && rc-service NetworkManager start; rc-update add NetworkManager default
+			[ "$init" = "runit" ] && ln -s /etc/runit/sv/NetworkManager /etc/runit/sv/NetworkManager
+			[ "$init" = "s6" ] && s6-rc-bundle add NetworkManager
+			;;
+		esac
 # Post Script
-pacman --needed --noconfirm -R fzf
+pacman --noconfirm -R fzf
