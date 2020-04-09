@@ -20,7 +20,7 @@ while : ; do
 	printf "\nDo you prefer vim or nano as a text editor: "
 	read -r editor
 	case $editor in
-		[Vv][Ii][Mm]) pacman --needed --noconfirm -Sy vim>/dev/null 2>&1 & editor="vim"; break;;
+		[Vv][Ii][Mm]) printf 'Installing vim...'; pacman --needed --noconfirm -Sy vim>/dev/null 2>&1;editor="vim"; break;;
 		[Nn][Aa][Nn][Oo]) editor="nano"; break;;
 		*) printf "\nPlease answer either 'vim' or 'nano'\n" ;;
 	esac
@@ -159,7 +159,7 @@ fi
 printf "\n$divider\n"
 case $OS in
 	arch) \
-	printf "\nThe Arch mirror list can be slow and unreliable, please edit the mirrorlist for faster speeds. Press Enter to continue..."
+	printf "\nThe Arch mirror list can be slow and unreliable,\nplease edit the mirrorlist for faster speeds.\nPress Enter to continue..."
 	read tmp >/dev/null
 	$editor /etc/pacman.d/mirrorlist ;;
 	artix) \

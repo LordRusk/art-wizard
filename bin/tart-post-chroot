@@ -1,34 +1,34 @@
 #!/usr/bin/env sh
 
 # Locale
-print "\n$divider"
+clear
 printf "\nPlease choose a region and a city\nPress Enter to continue..."
-read tmp >/dev/null
+read tmp >/dev/null 2>&1
 rg=$(ls /usr/share/zoneinfo | fzf --layout=reverse)
 ct=$(ls /usr/share/zoneinfo/"$rg" | fzf --layout=reverse)
 ln -sf /usr/share/zoneinfo/"$rg"/"$ct" /etc/localtime
 hwclock --systohc
 
-printf "\n$divider"
-printf "\nUncomment the locales you need\nPress Enter to continue..."
-read tmp >/dev/null
+clear
+printf "Uncomment the locales you need\nPress Enter to continue..."
+read tmp >/dev/null 2>&1
 $editor /etc/locale.gen
 locale-gen
 
 # Bootloader
-printf "\n$diver"
-printf "\nWould you like to install a bootloader? [Y/n]"
+printf "\n$divider"
+printf "\nWould you like to install a bootloader? [Y/n]: "
 read -r tmp
 case $tmp in
 	[Nn]) break;;
 	*) case $bios in
 		bios) \
 		while : ; do
-			printf "Would you like to install 'grub' or 'grub-legacy' (untested)?"
+			printf "Would you like to install 'grub' or 'grub-legacy' (untested): "
 			read -r bootldr
 			case $bootldr in
-				[Gg][Rr][Uu][Bb]) bootldr="grub" ;;
-				[Gg][Rr][Uu][Bb]\-[Ll][Ee][Gg][Aa][Cc][Yy]) bootldr="grub-legacy" ;;
+				[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
+				[Gg][Rr][Uu][Bb]\-[Ll][Ee][Gg][Aa][Cc][Yy]) bootldr="grub-legacy"; break;;
 				*) printf "Please answer either 'grub' or 'grub-legacy'"
 			esac
 		done
@@ -52,11 +52,11 @@ case $tmp in
 		fi ;;
 		efi) \
 		while : ; do
-			printf "Would you like to install 'grub' or 'refind'?"
+			printf "Would you like to install 'grub' or 'refind': "
 			read -r bootldr
 			case $bootldr in
-				[Gg][Rr][Uu][Bb]) bootldr="grub" ;;
-				[Rr][Ee][Ff][Ii][Nn][Dd]) bootldr="refind" ;;
+				[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
+				[Rr][Ee][Ff][Ii][Nn][Dd]) bootldr="refind"; break;;
 				*) printf "Please answer either 'grub' or 'refind'"
 			esac
 		done
@@ -77,28 +77,28 @@ esac
 
 # Added user and user password
 printf "\n$divider"
-printf "\nWould you like to create a user? [Y/n]"
+printf "\nWould you like to create a user? [Y/n]: "
 read -r cu
 case $cu in
 	[Nn]) break;;
 	*) \
-	printf "Please enter the name of your new user"
+	printf "Please enter the name of your new user: "
 	read -r name
 	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
-		clear
 		printf "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _."
 		read -r name
 	done
 	useradd -m -g wheel "$name"
-	pmsg="Enter a password for the user"
+	printf "\n$divider"
+	pmsg="\nEnter a password for the user"
 	sup() { printf "$pmsg"; passwd "$name" || rsup; }
-	rsup() { pmsg="The password you entered was incorrect, please enter a new password"; sup; }
+	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
 	sup
 esac
 
 # Setting the root password
 printf "\n$divder"
-printf "\nWould you like to set a root password [Y/n]"
+printf "\nWould you like to set a root password [Y/n]: "
 read -r srp
 case $srp in
 	[Nn]) break;;
