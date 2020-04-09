@@ -74,9 +74,9 @@ elif [ "$auto" = "auto" ]; then
 	while : ; do
 		printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
 		read -r rps
-		while ! echo "$rps" | grep -o "[0-9]+,[a-z]+"; do
-			printf 'Not acceptable size!'
-			printf 'How big do you want your root partition to be? (30gb,50gb,etc)'
+		while ! echo "$rps" | grep -o "[0-9+],[a-z+]"; do
+			printf 'Not acceptable size!\n'
+			printf 'How big do you want your root partition to be? (30gb,50gb,etc): '
 			read -r rps
 		done
 	done
