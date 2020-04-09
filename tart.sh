@@ -21,6 +21,10 @@ EOF
 read -r tmp
 case $tmp in
 	[Nn]) break;;
-	*) sh ~/tart/bin/tart-pre-chroot ;;
+	*) \
+	printf "\nDownloading Art Wizard Repository..."
+	git clone https://www.github.com/lordrusk/tart >/dev/null 2>&1
+	sh ~/tart/bin/tart-pre-chroot
+	;;
 esac
 
