@@ -14,8 +14,8 @@
 # $5 = Swap partition size (if needed)
 
 ### Functions ###
-dosswap() { printf "n\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n+$4\nn\np\n\n\n\nw" | fdisk "$1"; }
-dosnoswap() { printf "n\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n\nw" | fdisk "$1"; }
+dosswap() { printf "o\nn\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n+$4\nn\np\n\n\n\nw" | fdisk "$1"; }
+dosnoswap() { printf "o\nn\np\n\n\n+$2\nn\np\n\n\n+$3\nn\np\n\n\n\nw" | fdisk "$1"; }
 gptswap() { printf "g\nn\n\n\n+$2\nn\n\n\n+$3\nn\n\n\n+$4\nn\n\n\n\nw" | fdisk "$1"; }
 gptnoswap() { printf "g\nn\n\n\n+$2\nn\n\n\n+$3\nn\n\n\n\nw" | fdisk "$1"; }
 
