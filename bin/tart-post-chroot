@@ -2,7 +2,7 @@
 
 # Locale
 clear
-printf "\nPlease choose a region and a city\nPress Enter to continue..."
+printf "Please choose a region and a city\nPress Enter to continue..."
 read tmp >/dev/null 2>&1
 rg=$(ls /usr/share/zoneinfo | fzf --layout=reverse)
 ct=$(ls /usr/share/zoneinfo/"$rg" | fzf --layout=reverse)
@@ -17,7 +17,7 @@ locale-gen
 
 # Bootloader
 printf "\n$divider"
-printf "\nWould you like to install a bootloader? [Y/n]: "
+printf "\n\nWould you like to install a bootloader? [Y/n]: "
 read -r tmp
 case $tmp in
 	[Nn]) break;;
@@ -37,7 +37,8 @@ case $tmp in
 		# a boot manager on a bios
 		# machine.
 		if [ "$bootldr" = "grub" ]; then
-			pacman --needed --noconfirm -Syu grub
+			printf "Installing grub...\n"
+			pacman --needed --noconfirm -Syu grub >/dev/null 2>&1
 			grub-install "$cdrive"
 			grub-mkconfig -o /boot/grub/grub.cfg
 		elif [ "$bootldr" = "grub-legacy" ]; then
@@ -65,7 +66,8 @@ case $tmp in
 		# a boot manager on a efi
 		# machine.
 		if [ "$bootldr" = "grub" ]; then
-			pacman --needed --noconfirm -Syu grub efibootmgr
+			printf "Installing grub...\n"
+			pacman --needed --noconfirm -Syu grub efibootmgr >/dev/null 2>&1
 			grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
 			grub-mkconfig -o /boot/grub/grub.cfg
 		elif [ "$bootldr" = "refind" ]; then
@@ -77,7 +79,7 @@ esac
 
 # Added user and user password
 printf "\n$divider"
-printf "\nWould you like to create a user? [Y/n]: "
+printf "\n\nWould you like to create a user? [Y/n]: "
 read -r cu
 case $cu in
 	[Nn]) break;;
@@ -89,28 +91,26 @@ case $cu in
 		read -r name
 	done
 	useradd -m -g wheel "$name"
-	pmsg="\nEnter a password for the user"
-	sup() { echo "$pmsg"; passwd "$name" || rsup; }
+	sup() { [ -z "$pmsg" ] || echo "$pmsg"; passwd "$name" || rsup; }
 	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
 	sup
 esac
 
 # Setting the root password
-printf "\n$divder"
-printf "\nWould you like to set a root password [Y/n]: "
+printf "\n$divider"
+printf "\n\nWould you like to set a root password [Y/n]: "
 read -r srp
 case $srp in
 	[Nn]) break;;
 	*) \
-	pmsg="Enter a password for root"
-	srp() { echo "$pmsg"; passwd root || rsrp; }
+	srp() { [ -z "$pmsg" ] || echo "$pmsg"; passwd root || rsrp; }
 	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
 	srp
 esac
 
 # Sudo || Doas
 printf "\n$divider"
-printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
+printf "\n\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
 read -r sudo
 case $sudo in
 	[Ss][Uu][Dd][Oo]) sudo="sudo" ;;
@@ -121,7 +121,7 @@ if [ $sudo = "sudo" ]; then
 	pacman --needed --noconfirm -S sudo
 
 	printf "\n$divder"
-	printf 'Would you like to edit the sudoers file? (User created in wheel group) (/etc/sudoers) [Y/n]: '
+	printf "Would you like to edit the sudoers file?\n(User created in wheel group) (/etc/sudoers) [Y/n]: "
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;
@@ -145,7 +145,7 @@ elif [ $sudo = "doas" ]; then
 		*) cp ~/tart/share/doas-tmplate /usr/local/etc/doas.conf ;;
 	esac
 
-	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) Y/n'
+	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) [Y/n]'
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;

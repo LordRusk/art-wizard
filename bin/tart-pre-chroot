@@ -206,7 +206,7 @@ case $OS in
 	rm /mnt/tart-post-chroot
 
 	printf "\n$divider\n"
-	printf "\nWould you like to restart now? Y/n"
+	printf "\nWould you like to restart now? [Y/n]: "
 	read -r tmp
 	case $tmp in
 		n) exit ;;
@@ -229,7 +229,7 @@ case $OS in
 	rm /mnt/tart-post-chroot
 
 	printf "\n$divider\n"
-	printf "\nWould you like to restart now? Y/n"
+	printf "\nWould you like to restart now? [Y/n]: "
 	read tmp
 	case $tmp in
 		n) exit ;;
