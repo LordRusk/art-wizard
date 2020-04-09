@@ -23,7 +23,8 @@ case $tmp in
 	[Nn]) break;;
 	*) \
 	printf "\nDownloading Art Wizard Repository..."
-	git clone https://www.github.com/lordrusk/tart -C ~/ >/dev/null 2>&1
+	cd ~/
+	git clone https://www.github.com/lordrusk/tart >/dev/null 2>&1
 	sh ~/tart/bin/tart-pre-chroot
 	;;
 esac
