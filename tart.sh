@@ -22,7 +22,7 @@ read -r tmp
 case $tmp in
 	[Nn]) break;;
 	*) \
-	printf "\nDownloading Art Wizard Repository..."
+	printf "Downloading Art Wizard Repository..."
 	cd ~/
 	git clone https://www.github.com/lordrusk/tart >/dev/null 2>&1
 	sh ~/tart/bin/tart-pre-chroot
