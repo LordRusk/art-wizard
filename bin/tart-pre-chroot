@@ -60,12 +60,18 @@ if [ "$auto" = "configure" ]; then
 	zsh
 	wait
 
-	printf "Please select the drive you would like to install $OS to: "
-	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
+	printf "Please select the drive you would like to install $OS to\nPress enter to continue..."
+	read tmp >/dev/null 2>&1
+	printf "Installing fzf..."
+	pacman --needed --noconfirm -Sy fzf >/dev/null 2>&1
+	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | fzf)"
 	cdrive=$(echo "$sdrive" | awk '{print $1}')
 elif [ "$auto" = "auto" ]; then
-	printf "Please select the drive you would like to install $OS to: "
-	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | umenu)"
+	printf "Please select the drive you would like to install $OS to\nPress enter to continue..."
+	read tmp >/dev/null 2>&1
+	printf "Installing fzf..."
+	pacman --needed --noconfirm -Sy fzf >/dev/null 2>&1
+	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | fzf)"
 	cdrive=$(echo "$sdrive" | awk '{print $1}')
 
 	printf "\n$divider\n"

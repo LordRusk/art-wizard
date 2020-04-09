@@ -46,7 +46,7 @@ case $tmp in
 			useradd tmp
 			cd grub-legacy
 			sudo -u tmp makepkg --noconfirm -si
-			cd ../
+			cd ..
 			rm -rf grub-legacy
 			pacman --noconfirm -R git fakeroot sudo
 		fi ;;
@@ -85,12 +85,12 @@ case $cu in
 	printf "Please enter the name of your new user: "
 	read -r name
 	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
-		printf "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _."
+		printf "Username not valid. Give a username beginning with a [letter, with only lowercase letters, - or _]: "
 		read -r name
 	done
 	useradd -m -g wheel "$name"
 	pmsg="\nEnter a password for the user"
-	sup() { printf "$pmsg"; passwd "$name" || rsup; }
+	sup() { echo "$pmsg"; passwd "$name" || rsup; }
 	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
 	sup
 esac
@@ -103,14 +103,14 @@ case $srp in
 	[Nn]) break;;
 	*) \
 	pmsg="Enter a password for root"
-	srp() { printf "$pmsg"; passwd root || rsrp; }
+	srp() { echo "$pmsg"; passwd root || rsrp; }
 	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
 	srp
 esac
 
 # Sudo || Doas
 printf "\n$divider"
-printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]"
+printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
 read -r sudo
 case $sudo in
 	[Ss][Uu][Dd][Oo]) sudo="sudo" ;;
@@ -121,7 +121,7 @@ if [ $sudo = "sudo" ]; then
 	pacman --needed --noconfirm -S sudo
 
 	printf "\n$divder"
-	printf 'Would you like to edit the sudoers file? (User created in wheel group) (/etc/sudoers) [Y/n]'
+	printf 'Would you like to edit the sudoers file? (User created in wheel group) (/etc/sudoers) [Y/n]: '
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;
@@ -133,12 +133,12 @@ elif [ $sudo = "doas" ]; then
 	pacman -S make
 	make install
 	pacman -R make
-	cd ../
+	cd ..
 	rm -rf doas/
 	mkdir -p /usr/local/etc/
 
 	printf "\n$divder"
-	printf "\nWould you like to copy a tmplate doas config file? [Y/n]"
+	printf "\nWould you like to copy a tmplate doas config file? [Y/n]: "
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;
@@ -154,4 +154,4 @@ elif [ $sudo = "doas" ]; then
 fi
 
 # Post Script
-pacman -R fzf
+pacman --needed --noconfirm -R fzf
