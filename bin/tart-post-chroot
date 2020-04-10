@@ -179,5 +179,11 @@ case $tmp in
 			[ "$init" = "s6" ] && s6-rc-bundle add NetworkManager
 			;;
 		esac
+	fi
+esac
+
+# Release custom dotfiles if specified
+[ -z "$dotfilesrepo" ] && printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" >/dev/null 2>&1 && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
+
 # Post Script
 pacman --noconfirm -R fzf
