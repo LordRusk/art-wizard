@@ -119,45 +119,69 @@ elif [ "$auto" = "auto" ]; then
 	# defined variables.
 	if [ "$bios" = "efi" ] && [ "$ssp" != "y" ]; then
 		sh ~/tart/bin/partitioner gns $cdrive 500mb $rps
+		mkfs.ext4 "$cdrive"2
+		mount "$cdrive"2 /mnt
 		mkfs.fat -F32 "$cdrive"1
-		mount "$cdrive"1 /esp
+		mount "$cdrive"1 /mnt/esp
+		mkfs.ext4 "$cdrive"3
+		mkdir /mnt/home
+		mount "$cdrive"3 /mnt/home
 	elif [ "$bios" = "efi" ] && [ "$ssp" = "y" ]; then
 		sh ~/tart/bin/partitioner gs $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"3
+		mount "$cdrive"3 /mnt
 		mkfs.fat -F32 "$cdrive"1
 		mount "$cdrive"1 /esp
+		mkfs.ext4 "$cdrive"4
+		mkdir /mnt/home
+		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-	elif [ "$bios" = "bios" ] && [ "$ssp" != "y" ] && [ "$ps" = "dos" ]; then
+	elif [ "$ssp" != "y" ] && [ "$ps" = "dos" ]; then
 		sh ~/tart/bin/partitioner dns $cdrive 500mb $rps
+		mkfs.ext4 "$cdrive"2
+		mount "$cdrive"2 /mnt
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
-	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "dos" ]; then
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/home
+		mount "$cdrive"1 /mnt/home
+	elif [ "$ssp" = "y" ] && [ "$ps" = "dos" ]; then
 		sh ~/tart/bin/partitioner ds $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"3
+		mount "$cdrive"3 /mnt
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
+		mkfs.ext4 "$cdrive"4
+		mkdir /mnt/home
+		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-	elif [ "$bios" = "bios" ] && [ "$ssp" != "y" ] && [ "$ps" = "gpt" ]; then
+	elif [ "$ssp" != "y" ] && [ "$ps" = "gpt" ]; then
 		sh ~/tart/bin/partitioner gns $cdrive 500mb $rps
+		mkfs.ext4 "$cdrive"2
+		mount "$cdrive"2 /mnt
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
-	elif [ "$bios" = "bios" ] && [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]; then
-		sh ~/tart/bin/partitioner gs $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"1
+		mkdir /mnt/home
+		mount "$cdrive"1 /mnt/home
+	elif [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]; then
+		sh ~/tart/bin/partitioner ds $cdrive 500mb $rps $sps
+		mkfs.ext4 "$cdrive"3
+		mount "$cdrive"3 /mnt
 		mkfs.ext4 "$cdrive"1
 		mkdir /mnt/boot
 		mount "$cdrive"1 /mnt/boot
+		mkfs.ext4 "$cdrive"4
+		mkdir /mnt/home
+		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-
 	fi
-	mkfs.ext4 "$cdrive"3
-	mkfs.ext4 "$cdrive"4
-	mount "$cdrive"3 /mnt
-	mkdir /mnt/home
-	mount "$cdrive"4 /mnt/home
 fi
 
 # Mirrorlist || Init System
