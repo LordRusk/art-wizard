@@ -104,7 +104,7 @@ case $srp in
 	[Nn]) break;;
 	*) \
 	srp() { [ -z "$pmsg" ] || echo "$pmsg"; passwd root || rsrp; }
-	rsrp() { pmsg="\nThe password you entered was incorrect, please enter a new password"; srp; }
+	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
 	srp
 esac
 
@@ -183,7 +183,7 @@ case $tmp in
 esac
 
 # Release custom dotfiles if specified
-[ -z "$dotfilesrepo" ] && printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" >/dev/null 2>&1 && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
+[ -z "$name" ] || [ -z "$dotfilesrepo" ] || printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" >/dev/null 2>&1 && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
 
 # Post Script
 pacman --noconfirm -R fzf
