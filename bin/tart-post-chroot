@@ -158,7 +158,7 @@ printf "\nWould you like to install NetworkManager? [Y/n]"
 read -r tmp
 case $tmp in
 	[Nn]) exit;;
-	*) \n
+	*) \
 	if [ "$OS" = "arch" ]; then
 		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
