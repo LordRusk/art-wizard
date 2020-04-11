@@ -19,7 +19,9 @@ needed, exit the wizard and edit the file.
 ------------------------------------------------------
 This wizard also has the capability of depoying a
 dotfiles repository. This can be achieved with option
--d [git url].
+-d [git url]. You do need to create the user for this
+operation, so if you skip that step, even if you use
+-d, the dotfiles will not be release.
 ------------------------------------------------------
 Please contribute by adding more bootloader support,
 better writen code, etc.

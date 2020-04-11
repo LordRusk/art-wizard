@@ -160,7 +160,7 @@ case $tmp in
 	[Nn]) exit;;
 	*) \
 	if [ "$OS" = "arch" ]; then
-		printf "Installing NetworkManager...\n" & pacman -Syu networkmanager >/dev/null 2>&1
+		pacman -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
 		case $tmp in
