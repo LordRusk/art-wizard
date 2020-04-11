@@ -31,9 +31,9 @@ read -r tmp
 case $tmp in
 	[Nn]) break;;
 	*) \
+	cd ~
 	printf "Downloading Art Wizard Repository..."
-	cd ~/
-	git clone https://www.github.com/lordrusk/tart >/dev/null 2>&1
+	git clone https://github.com/lordrusk/art-wizard >/dev/null 2>&1
 	export dotfilesrepo
 	sh ~/tart/bin/tart-pre-chroot
 	;;
