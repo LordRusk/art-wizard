@@ -183,7 +183,7 @@ case $tmp in
 esac
 
 # Release custom dotfiles if specified
-[ -z "$name" ] || [ -z "$dotfilesrepo" ] || printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" >/dev/null 2>&1 && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
+[ -z "$name" ] || [ -z "$dotfilesrepo" ] || printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
 
 # Post Script
 printf "\n$divider\n"
