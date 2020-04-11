@@ -160,15 +160,15 @@ case $tmp in
 	[Nn]) exit;;
 	*) \
 	if [ "$OS" = "arch" ]; then
-		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager >/dev/null 2>&1
+		printf "Installing NetworkManager...\n" & pacman -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
 		case $tmp in
 			[Nn]) exit;;
-			*) printf "Enabling NetworkManager...\n"; systemctl enable NetworkManager >/dev/null 2>&1;;
+			*) printf "Enabling NetworkManager...\n" & systemctl enable NetworkManager >/dev/null 2>&1;;
 		esac
 	elif [ "$OS" = "artix" ]; then
-		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager-"${init}" >/dev/null 2>&1
+		printf "Installing NetworkManager...\n" & pacman -Syu networkmanager-"${init}" >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
 		case $tmp in
@@ -187,4 +187,4 @@ esac
 
 # Post Script
 printf "\n$divider\n"
-printf "\nRemoving unconsented to programs from system..."; pacman --noconfirm -R fzf >/dev/null 2>&1
+printf "\nRemoving unconsented to programs from system...\n" & pacman --noconfirm -R fzf >/dev/null 2>&1
