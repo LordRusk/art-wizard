@@ -35,6 +35,6 @@ case $tmp in
 	printf "Downloading Art Wizard Repository..."
 	git clone https://github.com/lordrusk/art-wizard >/dev/null 2>&1
 	export dotfilesrepo
-	sh ~/tart/bin/tart-pre-chroot
+	sh ~/art-wizard/bin/aw-pre-chroot
 	;;
 esac

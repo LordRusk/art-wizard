@@ -118,7 +118,7 @@ elif [ "$auto" = "auto" ]; then
 	# using the partitioner script and user
 	# defined variables.
 	if [ "$bios" = "efi" ] && [ "$ssp" != "y" ]; then
-		sh ~/tart/bin/partitioner gns $cdrive 500mb $rps
+		sh ~/art-wizard/bin/partitioner gns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
 		mkfs.fat -F32 "$cdrive"1
@@ -127,7 +127,7 @@ elif [ "$auto" = "auto" ]; then
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
 	elif [ "$bios" = "efi" ] && [ "$ssp" = "y" ]; then
-		sh ~/tart/bin/partitioner gs $cdrive 500mb $rps $sps
+		sh ~/art-wizard/bin/partitioner gs $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
 		mkfs.fat -F32 "$cdrive"1
@@ -138,7 +138,7 @@ elif [ "$auto" = "auto" ]; then
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
 	elif [ "$ssp" != "y" ] && [ "$ps" = "dos" ]; then
-		sh ~/tart/bin/partitioner dns $cdrive 500mb $rps
+		sh ~/art-wizard/bin/partitioner dns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
 		mkfs.ext4 "$cdrive"1
@@ -148,7 +148,7 @@ elif [ "$auto" = "auto" ]; then
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
 	elif [ "$ssp" = "y" ] && [ "$ps" = "dos" ]; then
-		sh ~/tart/bin/partitioner ds $cdrive 500mb $rps $sps
+		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
 		mkfs.ext4 "$cdrive"1
@@ -160,7 +160,7 @@ elif [ "$auto" = "auto" ]; then
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
 	elif [ "$ssp" != "y" ] && [ "$ps" = "gpt" ]; then
-		sh ~/tart/bin/partitioner gns $cdrive 500mb $rps
+		sh ~/art-wizard/bin/partitioner gns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
 		mkfs.ext4 "$cdrive"1
@@ -170,7 +170,7 @@ elif [ "$auto" = "auto" ]; then
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
 	elif [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]; then
-		sh ~/tart/bin/partitioner ds $cdrive 500mb $rps $sps
+		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
 		mkfs.ext4 "$cdrive"1
@@ -226,9 +226,9 @@ case $OS in
 	export cdrive
 	export divider
 
-	cp ~/tart/bin/tart-post-chroot /mnt
-	arch-chroot /mnt sh tart-post-chroot
-	rm /mnt/tart-post-chroot
+	cp ~/art-wizard/bin/aw-post-chroot /mnt
+	arch-chroot /mnt sh aw-post-chroot
+	rm /mnt/aw-post-chroot
 
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "
@@ -249,9 +249,9 @@ case $OS in
 	export cdrive
 	export divider
 
-	cp ~/tart/bin/tart-post-chroot /mnt
-	artools-chroot /mnt sh tart-post-chroot
-	rm /mnt/tart-post-chroot
+	cp ~/art-wizard/bin/aw-post-chroot /mnt
+	artools-chroot /mnt sh aw-post-chroot
+	rm /mnt/aw-post-chroot
 
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "

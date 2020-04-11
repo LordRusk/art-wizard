@@ -142,7 +142,7 @@ elif [ "$sudo" = "doas" ]; then
 	read -r tmp
 	case $tmp in
 		[Nn]) ;;
-		*) cp ~/tart/share/doas-tmplate /usr/local/etc/doas.conf ;;
+		*) cp ~/art-wizard/share/doas-tmplate /usr/local/etc/doas.conf ;;
 	esac
 
 	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) [Y/n]'
@@ -174,7 +174,7 @@ case $tmp in
 		case $tmp in
 			[Nn]) exit;;
 			*) \
-			[ "$init" = "openrc" ] && rc-service NetworkManager start; rc-update add NetworkManager default
+			[ "$init" = "openrc" ] && rc-service NetworkManager sart-wizard; rc-update add NetworkManager default
 			[ "$init" = "runit" ] && ln -s /etc/runit/sv/NetworkManager /etc/runit/sv/NetworkManager
 			[ "$init" = "s6" ] && s6-rc-bundle add NetworkManager
 			;;
