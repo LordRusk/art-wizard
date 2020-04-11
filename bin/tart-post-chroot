@@ -186,4 +186,5 @@ esac
 [ -z "$name" ] || [ -z "$dotfilesrepo" ] || printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" >/dev/null 2>&1 && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
 
 # Post Script
-pacman --noconfirm -R fzf
+printf "\n$divider\n"
+printf "\nRemoving unconsented to programs from system..." pacman --noconfirm -R fzf >/dev/null 2>&1
