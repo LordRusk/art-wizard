@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-while getopts ":d:" o; do case "${o}" in
+while getopts d parm; do case "${o}" in
 	d) dotfilesrepo=${OPTARG} && git ls-remote "$dotfilesrepo" || exit ;;
-	*) printf "Invalid option: -%s\\n" "$OPTARG" && exit ;;
+	*) printf "Invalid option: -%s\\n" && exit ;;
 esac done
 
 clear
@@ -14,12 +14,12 @@ fast, easy, and with as much customazation as possible.
 ------------------------------------------------------
 This wizard uses the core of LARBS to install specific
 programs defined in tart/share/progs.csv, in this file,
-you can find commented out examples for xorg. If exit
-the wizard and edit the file.
+you can find commented out examples for xorg. If
+needed, exit the wizard and edit the file.
 ------------------------------------------------------
 This wizard also has the capability of depoying a
 dotfiles repository. This can be achieved with option
-d [git url].
+-d [git url].
 ------------------------------------------------------
 Please contribute by adding more bootloader support,
 better writen code, etc.
