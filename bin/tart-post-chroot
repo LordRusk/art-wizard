@@ -160,12 +160,12 @@ case $tmp in
 	[Nn]) exit;;
 	*) \
 	if [ "$OS" = "arch" ]; then
-		printf "Installing NetworkManager...\n"; pacman -S networkmanager>/dev/null 2>&1
+		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
 		case $tmp in
 			[Nn]) exit;;
-			*) systemctl enable NetworkManager ;;
+			*) printf "Enabling NetworkManager...\n"; systemctl enable NetworkManager >/dev/null 2>&1;;
 		esac
 	elif [ "$OS" = "artix" ]; then
 		printf "Installing NetworkManager...\n"; pacman -Syu networkmanager-"${init}" >/dev/null 2>&1
