@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-while getopts d parm; do case "${o}" in
-	d) dotfilesrepo=${OPTARG} && git ls-remote "$dotfilesrepo" || exit ;;
+while getopts "d:" parm; do case $parm in
+	d) dotfilesrepo=$OPTARG && echo "$OPTARG" git ls-remote "$dotfilesrepo" || exit ;;
 	*) printf "Invalid option: -%s\\n" && exit ;;
 esac done
 
