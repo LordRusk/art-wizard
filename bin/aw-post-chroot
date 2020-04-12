@@ -20,7 +20,7 @@ printf "\n$divider\n"
 printf "\nWould you like to install a bootloader? [Y/n]: "
 read -r tmp
 case $tmp in
-	[Nn]) break;;
+	[Nn]) exit;;
 	*) case $bios in
 		bios) \
 		while : ; do
@@ -92,7 +92,7 @@ case $cu in
 	done
 	useradd -g wheel "$name"
 	sup() { [ -z "$pmsg" ] || echo "$pmsg"; passwd "$name" || rsup; }
-	rsup() { pmsg="\nThe password you entered was incorrect, please enter a new password: "; sup; }
+	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
 	sup
 esac
 
@@ -189,8 +189,7 @@ printf "Deploying dotfiles...\n" && sudo -u "$name" git clone "$dotfilesrepo" "/
 
 # Make sure home directory is created
 # with correct permissions
-mkdir /home/$name
-chown $name:$name /home/$name
+mkhomedir_helper $name
 
 # Post Script
 printf "\n$divider\n"
