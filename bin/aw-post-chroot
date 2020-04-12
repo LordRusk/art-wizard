@@ -183,7 +183,7 @@ case $tmp in
 esac
 
 # Release custom dotfiles if specified
-[ -z "$name" ] || [ -z "$dotfilesrepo" ] || \
+[ -z "$name" ] || [ -z "$dotfilesrepo" ] || mkdir /home/$home; \
 printf "\n$divider\n"; printf "\nInstalling needed packages to deploy dotfiles...\n"; pacman --noconfirm --needed -Syu git sudo >/dev/null 2>&1; \
 printf "Deploying dotfiles...\n" && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
 
