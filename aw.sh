@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
 
 while getopts "d:p:" parm; do case $parm in
-	d) dotfilesrepo=$OPTARG && echo "$OPTARG" git ls-remote "$dotfilesrepo" || printf "Not a valid git repository!" && exit ;;
+	d) dotfilesrepo=$OPTARG && \
+	prinf "Checking if gitrepo is real...\n" && \
+	pacman --needed --noconfirm -Sy git >/dev/null 2>&1 && \
+	git ls-remote "$dotfilesrepo" || \
+	printf "Not a valid git repository!" && exit ;;
 	p) progsfile=$OPTARG ;;
 	*) printf "Invalid option: -%s\\n" && exit ;;
 esac done
