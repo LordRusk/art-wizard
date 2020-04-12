@@ -90,7 +90,7 @@ case $cu in
 		printf "Username not valid. Give a username beginning with a\n[letter, with only lowercase letters, - or _]: "
 		read -r name
 	done
-	useradd -m -g wheel "$name"
+	useradd -g wheel "$name"
 	sup() { [ -z "$pmsg" ] || echo "$pmsg"; passwd "$name" || rsup; }
 	rsup() { pmsg="\nThe password you entered was incorrect, please enter a new password: "; sup; }
 	sup
@@ -186,6 +186,11 @@ esac
 [ -z "$name" ] || [ -z "$dotfilesrepo" ] || \
 printf "\n$divider\n"; printf "\nInstalling needed packages to deploy dotfiles...\n"; pacman --noconfirm --needed -Syu git sudo >/dev/null 2>&1; \
 printf "Deploying dotfiles...\n" && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
+
+# Make sure home directory is created
+# with correct permissions
+mkdir /home/$name
+chown $name:$name /home/$name
 
 # Post Script
 printf "\n$divider\n"
