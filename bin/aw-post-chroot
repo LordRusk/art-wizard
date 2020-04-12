@@ -160,7 +160,7 @@ case $tmp in
 	[Nn]) exit;;
 	*) \
 	if [ "$OS" = "arch" ]; then
-		printf "Installing NetworkManager..." & pacman --needed --noconfirm -Syu networkmanager >/dev/null 2>&1
+		printf "Installing NetworkManager...\n" & pacman --needed --noconfirm -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
 		case $tmp in
@@ -184,8 +184,8 @@ esac
 
 # Release custom dotfiles if specified
 [ -z "$name" ] || [ -z "$dotfilesrepo" ] || \
-printf "\n$divider\n"; printf "\nInstalling needed packages to deploy dotfiles..."; pacman --noconfirm --needed -Syu git sudo; \
-printf "\nDeploying dotfiles..." && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
+printf "\n$divider\n"; printf "\nInstalling needed packages to deploy dotfiles...\n"; pacman --noconfirm --needed -Syu git sudo >/dev/null 2>&1; \
+printf "Deploying dotfiles...\n" && sudo -u "$name" git clone "$dotfilesrepo" "/home/$name" && rm -f "/home/$name/README.md" "/home/$name/readme" "/home/$name/LICENSE"
 
 # Post Script
 printf "\n$divider\n"

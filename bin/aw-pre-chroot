@@ -225,6 +225,7 @@ case $OS in
 	export editor
 	export cdrive
 	export divider
+	export dotfilesrepo
 
 	cp ~/art-wizard/bin/aw-post-chroot /mnt
 	arch-chroot /mnt sh aw-post-chroot
@@ -248,6 +249,7 @@ case $OS in
 	export editor
 	export cdrive
 	export divider
+	export dotfilesrepo
 
 	cp ~/art-wizard/bin/aw-post-chroot /mnt
 	artools-chroot /mnt sh aw-post-chroot
