@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 
+while getopts "dp" parm; do case $parm in
+	d) deploydotfiles="y" ;;
+	p) installprogsfile="y" ;;
+	*) printf "Invalid option: -%s\\n" && exit ;;
+esac done
+
+
+
 ### FUNCTIONS ###
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts.
 	[ -z "$name" ] || [ -z "$dotfilesrepo" ] || exit
@@ -70,8 +78,9 @@ installationloop() { \
 ### ACTUAL SCRIPT ###
 
 # Release custom dotfiles if specified
-putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
+[ "$deploydotfiles" = "y" ] && \
+putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch" && \
 rm -f "/home/$name/README.md" "/home/$name/LICENSE"
 
 # Install Programs from progs.csv
-installationloop
+[ "$installprogsfile" = "y" ] && installationloop
