@@ -229,6 +229,7 @@ case $OS in
 	export dotfilesrepo
 
 	cp $progsfile /mnt
+	cp ~/art-wizard/bin/larbs-core /mnt
 	cp ~/art-wizard/bin/aw-post-chroot /mnt
 	arch-chroot /mnt sh aw-post-chroot
 	rm /mnt/aw-post-chroot
@@ -255,6 +256,7 @@ case $OS in
 	export dotfilesrepo
 
 	cp $progsfile /mnt
+	cp ~/art-wizard/bin/larbs-core /mnt
 	cp ~/art-wizard/bin/aw-post-chroot /mnt
 	artools-chroot /mnt sh aw-post-chroot
 	rm /mnt/aw-post-chroot
