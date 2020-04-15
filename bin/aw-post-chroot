@@ -185,4 +185,5 @@ esac
 # Use the core of larbs to install
 # programs from progs.cv and deploy
 # dotfiles
-sh larbs-core
+[ -z "$dotfilesrepo" ] || sh larbs-core -d
+[ -z "$progsfile" ] || sh larbs-core -p
