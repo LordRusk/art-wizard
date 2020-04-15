@@ -61,7 +61,8 @@ if [ "$auto" = "configure" ]; then
 	zsh
 	wait
 
-	printf "Please select the drive you would like to install $OS to\n"
+	printf "\n$divider\n"
+	printf "\nPlease select the drive you would like to install $OS to\n"
 	while : ; do
 		printf "$(printf "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')")\n"
 		read -r cdrive
@@ -71,7 +72,8 @@ if [ "$auto" = "configure" ]; then
 		esac
 	done
 elif [ "$auto" = "auto" ]; then
-	printf "Please select the drive you would like to install $OS to\n"
+	printf "\n$divider\n"
+	printf "\nPlease select the drive you would like to install $OS to\n"
 	while : ; do
 		printf "$(printf "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')")\n"
 		read -r cdrive
