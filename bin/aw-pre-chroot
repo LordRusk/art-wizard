@@ -61,19 +61,25 @@ if [ "$auto" = "configure" ]; then
 	zsh
 	wait
 
-	printf "Please select the drive you would like to install $OS to\nPress enter to continue..."
-	read tmp >/dev/null 2>&1
-	printf "Installing fzf..."
-	pacman --needed --noconfirm -Sy fzf >/dev/null 2>&1
-	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | fzf)"
-	cdrive=$(echo "$sdrive" | awk '{print $1}')
+	printf "Please select the drive you would like to install $OS to\n"
+	while : ; do
+		printf "$(printf "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')")\n"
+		read -r cdrive
+		case $cdrive in
+			/dev/sd[a-z]) break;;
+			*) printf 'Please pick a drive from the list...\n'
+		esac
+	done
 elif [ "$auto" = "auto" ]; then
-	printf "Please select the drive you would like to install $OS to\nPress enter to continue..."
-	read tmp >/dev/null 2>&1
-	printf "Installing fzf..."
-	pacman --needed --noconfirm -Sy fzf >/dev/null 2>&1
-	sdrive="$(echo "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')" | fzf)"
-	cdrive=$(echo "$sdrive" | awk '{print $1}')
+	printf "Please select the drive you would like to install $OS to\n"
+	while : ; do
+		printf "$(printf "$(lsblk -lp | grep "disk $" | awk '{print $1, "("$4")"}')")\n"
+		read -r cdrive
+		case $cdrive in
+			/dev/sd[a-z]) break;;
+			*) printf 'Please pick a drive from the list...\n'
+		esac
+	done
 
 	printf "\n$divider\n"
 	printf "\nHow big do you want your root partition to be? (30gb,50gb,etc): "
