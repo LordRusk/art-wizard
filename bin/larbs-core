@@ -10,7 +10,7 @@ esac done
 
 ### FUNCTIONS ###
 putgitrepo() { # Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts.
-	[ -z "$name" ] || [ -z "$dotfilesrepo" ] || exit
+	[ -z "$name" ] && [ -z "$dotfilesrepo" ] && exit
 	[ -z "$3" ] && branch="master" || branch="$repobranch"
 	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2"
