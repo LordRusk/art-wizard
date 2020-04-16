@@ -132,6 +132,7 @@ elif [ "$auto" = "auto" ]; then
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
 		mkfs.fat -F32 "$cdrive"1
+		mkdir /mnt/esp
 		mount "$cdrive"1 /mnt/esp
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
@@ -141,7 +142,8 @@ elif [ "$auto" = "auto" ]; then
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
 		mkfs.fat -F32 "$cdrive"1
-		mount "$cdrive"1 /esp
+		mkdir /mnt/esp
+		mount "$cdrive"1 /mnt/esp
 		mkfs.ext4 "$cdrive"4
 		mkdir /mnt/home
 		mount "$cdrive"4 /mnt/home
