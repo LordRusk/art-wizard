@@ -38,6 +38,7 @@ while : ; do
 done
 
 # Configure and format partitions
+
 printf "\n$divider\n"
 while : ; do
 	printf "\nWould you like to configure the drives yourself or\ncompletely wipe the drive and do a complete (re)install? [Configure/Auto]: "
@@ -110,7 +111,7 @@ elif [ "$auto" = "auto" ]; then
 		esac
 	done
 
-	[ "$bios" = "bios" ] && \
+	if [ "$bios" = "bios" ]; then
 		printf "\n$divider\n"
 		while : ; do
 			printf "\nDo you want a 'dos' or a 'gpt' partition scheme? [dos/gpt]: "
@@ -121,6 +122,7 @@ elif [ "$auto" = "auto" ]; then
 				*) printf "\nUnkown or unsupported partition scheme, please answer either 'dos' or 'gpt'\n" ;;
 			esac
 		done
+	fi
 
 	# Big O'l code block for auto partitioning
 	# using the partitioner script and user
