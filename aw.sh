@@ -16,17 +16,6 @@ Welcome to The Art Wizard,
 This wizard is here to help you install Arch or Artix
 fast, easy, and with as much customazation as possible.
 ------------------------------------------------------
-This wizard uses the core of LARBS to install specific
-programs defined in art-wizard/share/progs.csv, in
-this file, you can find commented out examples for
-xorg. If needed, exit the wizard and edit the file.
-------------------------------------------------------
-This wizard also has the capability of depoying a
-dotfiles repository. This can be achieved with option
--d [git url]. You do need to create the user for this
-operation, so if you skip that step, even if you use
--d, the dotfiles will not be released.
-------------------------------------------------------
 Please contribute by adding more bootloader support,
 more network managers, better writen code, etc.
 ------------------------------------------------------
@@ -40,7 +29,6 @@ case $tmp in
 	cd ~
 	printf "Downloading Art Wizard Repository..."
 	git clone https://github.com/lordrusk/art-wizard >/dev/null 2>&1
-	export dotfilesrepo
 	sh ~/art-wizard/bin/aw-pre-chroot
 	;;
 esac

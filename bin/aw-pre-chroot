@@ -237,8 +237,6 @@ case $OS in
 	export editor
 	export cdrive
 	export divider
-	export progsfile
-	export dotfilesrepo
 
 	cp $progsfile /mnt
 	cp ~/art-wizard/bin/larbs-core /mnt
@@ -264,8 +262,6 @@ case $OS in
 	export editor
 	export cdrive
 	export divider
-	export progsfile
-	export dotfilesrepo
 
 	cp $progsfile /mnt
 	cp ~/art-wizard/bin/larbs-core /mnt

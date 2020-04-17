@@ -181,9 +181,3 @@ case $tmp in
 		esac
 	fi ;;
 esac
-
-# Use the core of larbs to install
-# programs from progs.cv and deploy
-# dotfiles
-[ -z "$dotfilesrepo" ] || export name && export dotfilesrepo && sh larbs-core -d
-[ -z "$progsfile" ] || export name && export progsfile && sh larbs-core -p
