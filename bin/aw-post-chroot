@@ -110,7 +110,7 @@ esac
 
 # Sudo || Doas
 printf "\n$divider\n"
-printf "\nWould you like to install 'Sudo' or 'Doas'? [sudo/doas/N]: "
+printf "\nWould you like to install 'Sudo' or 'Doas'?\nWarning: doas is very buggy and you may experience make errors.\n[sudo/doas/N]: "
 read -r sudo
 case $sudo in
 	[Ss][Uu][Dd][Oo]) sudo="sudo" ;;
@@ -141,14 +141,14 @@ elif [ "$sudo" = "doas" ]; then
 	printf "\nWould you like to copy a tmplate doas config file? [Y/n]: "
 	read -r tmp
 	case $tmp in
-		[Nn]) ;;
+		[Nn]) exit;;
 		*) cp ~/art-wizard/share/doas-tmplate /usr/local/etc/doas.conf ;;
 	esac
 
 	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) [Y/n]'
 	read -r tmp
 	case $tmp in
-		[Nn]) ;;
+		[Nn]) exit;;
 		*) $editor /usr/local/etc/doas.conf ;;
 	esac
 fi
