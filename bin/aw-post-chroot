@@ -181,3 +181,7 @@ case $tmp in
 		esac
 	fi ;;
 esac
+
+printf "\n$divider\n"
+printf "\nRemoving unconsented to programs..."
+pacman -R fzf >/dev/null 2>&1
