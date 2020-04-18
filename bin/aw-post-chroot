@@ -86,7 +86,7 @@ case $cu in
 	*) \
 	printf "Please enter the name of your new user: "
 	read -r name
-	while ! echo "$name" | grep "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
+	while ! echo "$name" | grep -o "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
 		printf "Username not valid. Give a username beginning with a\n[letter, with only lowercase letters, - or _]: "
 		read -r name
 	done

@@ -1,14 +1,5 @@
 #!/usr/bin/env sh
 
-while getopts "d:p:" parm; do case $parm in
-	d) dotfilesrepo=$OPTARG && \
-	printf "Checking if git repository is valid...\n" && \
-	pacman --needed --noconfirm -Sy git >/dev/null 2>&1 \
-	;;
-	p) progsfile=$OPTARG ;;
-	*) printf "Invalid option: -%s\\n" && exit ;;
-esac done
-
 clear
 cat << EOF
 Welcome to The Art Wizard,
