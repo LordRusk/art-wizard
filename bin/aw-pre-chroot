@@ -137,7 +137,8 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-	) || [ "$bios" = "efi" ] && [ "$ssp" = "y" ] && (
+		)
+	[ "$bios" = "efi" ] && [ "$ssp" = "y" ] && (
 		sh ~/art-wizard/bin/partitioner gs $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -149,7 +150,8 @@ done
 		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-	) || [ "$ssp" != "y" ] && [ "$ps" = "dos" ] && (
+		)
+	[ "$ssp" != "y" ] && [ "$ps" = "dos" ] && (
 		sh ~/art-wizard/bin/partitioner dns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
@@ -159,7 +161,8 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-	) || [ "$ssp" = "y" ] && [ "$ps" = "dos" ] && (
+		)
+	[ "$ssp" = "y" ] && [ "$ps" = "dos" ] && (
 		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -171,7 +174,8 @@ done
 		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-	) || [ "$ssp" != "y" ] && [ "$ps" = "gpt" ] && (
+		)
+	[ "$ssp" != "y" ] && [ "$ps" = "gpt" ] && (
 		sh ~/art-wizard/bin/partitioner gns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
@@ -181,7 +185,8 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-	) || [ "$ssp" = "y" ] && [ "$ps" = "gpt" ] && (
+		)
+	[ "$ssp" = "y" ] && [ "$ps" = "gpt" ] && (
 		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -202,7 +207,8 @@ printf "\n$divider\n"
 	printf "\nThe Arch mirror list can be slow and unreliable,\nplease edit the mirrorlist for faster speeds.\nPress Enter to continue..."
 	read tmp >/dev/null
 	$editor /etc/pacman.d/mirrorlist
-) || [ "$OS" = "artix" ] && (
+	)
+[ "$OS" = "artix" ] && (
 	while : ; do
 		printf "\nWhich init system would you like to install? [Openrc/Runit/s6]"
 		read -r init
@@ -245,11 +251,9 @@ clear
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "
 	read -r tmp
-	case $tmp in
-		n) exit ;;
-		*) reboot ;;
-	esac
-) || [ "$OS" = "artix" ] && (
+	[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || reboot
+	)
+[ "$OS" = "artix" ] && (
 	fstabgen -U -p /mnt >> /mnt/etc/fstab
 
 	export OS
@@ -268,8 +272,5 @@ clear
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "
 	read tmp
-	case $tmp in
-		n) exit ;;
-		*) reboot ;;
-	esac
+	[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || reboot
 	)
