@@ -19,71 +19,65 @@ locale-gen
 printf "\n$divider\n"
 printf "\nWould you like to install a bootloader? [Y/n]: "
 read -r tmp
-case $tmp in
-	[Nn]) exit;;
-	*) case $bios in
-		bios) \
-		while : ; do
-			printf "Would you like to install 'grub' or 'grub-legacy' (untested): "
-			read -r bootldr
-			case $bootldr in
-				[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
-				[Gg][Rr][Uu][Bb]\-[Ll][Ee][Gg][Aa][Cc][Yy]) bootldr="grub-legacy"; break;;
-				*) printf "Please answer either 'grub' or 'grub-legacy'"
-			esac
-		done
+[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || [ "$bios" = "bios" ] && (
+	while : ; do
+		printf "Would you like to install 'grub' or 'grub-legacy' (untested): "
+		read -r bootldr
+		case $bootldr in
+			[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
+			[Gg][Rr][Uu][Bb]\-[Ll][Ee][Gg][Aa][Cc][Yy]) bootldr="grub-legacy"; break;;
+			*) printf "Please answer either 'grub' or 'grub-legacy'"
+		esac
+	done
 
-		# Code block for installing
-		# a boot manager on a bios
-		# machine.
-		if [ "$bootldr" = "grub" ]; then
-			printf "Installing grub...\n"
-			pacman --needed --noconfirm -Syu grub >/dev/null 2>&1
-			grub-install "$cdrive"
-			grub-mkconfig -o /boot/grub/grub.cfg
-		elif [ "$bootldr" = "grub-legacy" ]; then
-			pacman --noconfirm -Syu git fakeroot sudo
-			git clone https://aur.archlinux.org/grub-legacy
-			useradd tmp
-			cd grub-legacy
-			sudo -u tmp makepkg --noconfirm -si
-			cd ..
-			rm -rf grub-legacy
-			pacman --noconfirm -R git fakeroot sudo
-		fi ;;
-		efi) \
-		while : ; do
-			printf "Would you like to install 'grub' or 'refind': "
-			read -r bootldr
-			case $bootldr in
-				[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
-				[Rr][Ee][Ff][Ii][Nn][Dd]) bootldr="refind"; break;;
-				*) printf "Please answer either 'grub' or 'refind'"
-			esac
-		done
+	# Code block for installing
+	# a boot manager on a bios
+	# machine.
+	[ "$bootldr" = "grub" ] && (
+		printf "Installing grub...\n"
+		pacman --needed --noconfirm -Syu grub >/dev/null 2>&1
+		grub-install "$cdrive"
+		grub-mkconfig -o /boot/grub/grub.cfg
+	) || [ "$bootldr" = "grub-legacy" ] && (
+		pacman --noconfirm -Syu git fakeroot sudo
+		git clone https://aur.archlinux.org/grub-legacy
+		useradd tmp
+		cd grub-legacy
+		sudo -u tmp makepkg --noconfirm -si
+		cd ..
+		rm -rf grub-legacy
+		pacman --noconfirm -R git fakeroot sudo
+	)
+) || [ "$tmp" = "N" ] || [ "$tmp" = "n" ] || [ "$bios" = "efi" ] && (
+	while : ; do
+		printf "Would you like to install 'grub' or 'refind': "
+		read -r bootldr
+		case $bootldr in
+			[Gg][Rr][Uu][Bb]) bootldr="grub"; break;;
+			[Rr][Ee][Ff][Ii][Nn][Dd]) bootldr="refind"; break;;
+			*) printf "Please answer either 'grub' or 'refind'"
+		esac
+	done
 
-		# Code block for installing
-		# a boot manager on a efi
-		# machine.
-		if [ "$bootldr" = "grub" ]; then
-			printf "Installing grub...\n"
-			pacman --needed --noconfirm -Syu grub efibootmgr >/dev/null 2>&1
-			grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
-			grub-mkconfig -o /boot/grub/grub.cfg
-		elif [ "$bootldr" = "refind" ]; then
-			pacman --noconfirm -Syu refind-efi efibootmgr
-			refind --usedefualts $cdrive --alldrivers
-		fi ;;
-	esac
-esac
+	# Code block for installing
+	# a boot manager on a efi
+	# machine.
+	[ "$bootldr" = "grub" ] && (
+		printf "Installing grub...\n"
+		pacman --needed --noconfirm -Syu grub efibootmgr >/dev/null 2>&1
+		grub-install --target=x86_64-efi --efi-directory=/esp --bootloader-id=GRUB
+		grub-mkconfig -o /boot/grub/grub.cfg
+	) || [ "$bootldr" = "refind" ] && (
+		pacman --noconfirm -Syu refind-efi efibootmgr
+		refind --usedefualts $cdrive --alldrivers
+		)
+	)
 
 # Added user and user password
 printf "\n$divider\n"
 printf "\nWould you like to create a user? [Y/n]: "
 read -r cu
-case $cu in
-	[Nn]) break;;
-	*) \
+[ "$cu" = "N" ] || [ "$cu" = "n" ] || (
 	printf "Please enter the name of your new user: "
 	read -r name
 	while ! echo "$name" | grep -o "^[a-z_][a-z0-9_-]*$" >/dev/null 2>&1; do
@@ -94,19 +88,17 @@ case $cu in
 	sup() { [ -z "$pmsg" ] || echo "$pmsg"; passwd "$name" || rsup; }
 	rsup() { pmsg="The password you entered was incorrect, please enter a new password: "; sup; }
 	sup
-esac
+	)
 
 # Setting the root password
 printf "\n$divider\n"
 printf "\nWould you like to set a root password [Y/n]: "
 read -r srp
-case $srp in
-	[Nn]) break;;
-	*) \
+[ "$srp" = "N" ] || [ "$srp" = "n" ] || (
 	srp() { [ -z "$pmsg" ] || echo "$pmsg"; passwd root || rsrp; }
 	rsrp() { pmsg="The password you entered was incorrect, please enter a new password"; srp; }
 	srp
-esac
+	)
 
 # Sudo || Doas
 printf "\n$divider\n"
@@ -117,7 +109,7 @@ case $sudo in
 	[Dd][Oo][Aa][Ss]) sudo="doas" ;;
 esac
 
-if [ "$sudo" = "sudo" ]; then
+[ "$sudo" = "sudo" ] && (
 	printf "Installing sudo...\n"
 	pacman --needed --noconfirm -S sudo >/dev/null 2>&1
 
@@ -127,7 +119,7 @@ if [ "$sudo" = "sudo" ]; then
 		[Nn]) ;;
 		*) $editor /etc/sudoers ;;
 	esac
-elif [ "$sudo" = "doas" ]; then
+) || [ "$sudo" = "doas" ] && (
 	printf "Installing doas...\n"
 	pacman --needed --noconfirm -S opendoas >/dev/null 2>&1
 
@@ -137,15 +129,13 @@ elif [ "$sudo" = "doas" ]; then
 		[Nn]) exit;;
 		*) $editor /usr/local/etc/doas.conf ;;
 	esac
-fi
+	)
 
 printf "\n$divider\n"
 printf "\nWould you like to install NetworkManager? [Y/n]"
 read -r tmp
-case $tmp in
-	[Nn]) exit;;
-	*) \
-	if [ "$OS" = "arch" ]; then
+[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || [ "$bios" = "bios" ] && (
+	[ "$OS" = "arch" ] && (
 		printf "Installing NetworkManager...\n" & pacman --needed --noconfirm -Syu networkmanager >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
@@ -153,20 +143,17 @@ case $tmp in
 			[Nn]) exit;;
 			*) printf "Enabling NetworkManager...\n" & systemctl enable NetworkManager >/dev/null 2>&1;;
 		esac
-	elif [ "$OS" = "artix" ]; then
+	) || [ "$OS" = "artix" ] && (
 		printf "Installing NetworkManager...\n" & pacman -Syu networkmanager-"${init}" >/dev/null 2>&1
 		printf 'Would you like to enable NetworkManager [Y/n]: '
 		read -r $tmp
-		case $tmp in
-			[Nn]) exit;;
-			*) \
+		[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || [ "$bios" = "bios" ] && (
 			[ "$init" = "openrc" ] && rc-service NetworkManager sart-wizard; rc-update add NetworkManager default
 			[ "$init" = "runit" ] && ln -s /etc/runit/sv/NetworkManager /etc/runit/sv/NetworkManager
 			[ "$init" = "s6" ] && s6-rc-bundle add NetworkManager
-			;;
-		esac
-	fi ;;
-esac
+			)
+		)
+	)
 
 printf "\n$divider\n"
 printf "\nRemoving unconsented to programs..."
