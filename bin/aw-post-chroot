@@ -128,22 +128,8 @@ if [ "$sudo" = "sudo" ]; then
 		*) $editor /etc/sudoers ;;
 	esac
 elif [ "$sudo" = "doas" ]; then
-	git clone https://github.com/slicer69/doas
-	cd doas
-	pacman -S make
-	make install
-	pacman -R make
-	cd ..
-	rm -rf doas/
-	mkdir -p /usr/local/etc/
-
-	printf "\n$divder\n"
-	printf "\nWould you like to copy a tmplate doas config file? [Y/n]: "
-	read -r tmp
-	case $tmp in
-		[Nn]) exit;;
-		*) cp ~/art-wizard/share/doas-tmplate /usr/local/etc/doas.conf ;;
-	esac
+	printf "Installing doas...\n"
+	pacman --needed --noconfirm -S opendoas >/dev/null 2>&1
 
 	printf 'Would you like to edit the doas config file? (/usr/local/etc/doas.conf) [Y/n]'
 	read -r tmp
