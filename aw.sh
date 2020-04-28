@@ -25,8 +25,8 @@ Would you like to continue
 With the installer? [Y/n]
 EOF
 read -r tmp
-[ "$tmp" != "n" ] && [ "$tmp" != "N" ] && {
-	[ "$installtools" = "y" ] && {
+[ "$tmp" != "n" ] && [ "$tmp" != "N" ] && (
+	[ "$installtools" = "y" ] && (
 		printf "\n\nIt's always good to do a system update before using. Would you like to continue? [Y/n]"
 		read -r tmp
 		case $tmp in
@@ -34,10 +34,10 @@ read -r tmp
 			*) pacman -Syu ;;
 		esac
 		printf "\nInstalling Tools..." && pacman -S arch-install-scripts >/dev/null 2>&1\
-		}
+		)
 
 	cd ~
 	printf "Downloading Art Wizard Repository..."
 	git clone https://github.com/lordrusk/art-wizard >/dev/null 2>&1
 	sh ~/art-wizard/bin/aw-pre-chroot
-	}
+	)
