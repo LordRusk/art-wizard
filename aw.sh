@@ -25,8 +25,8 @@ Would you like to continue
 With the installer? [Y/n]
 EOF
 read -r tmp
-[ "$tmp" != "n" ] && [ "$tmp" != "N" ] && { \
-	[ "$installtools" = "y" ] && { \
+[ "$tmp" != "n" ] && [ "$tmp" != "N" ] && {
+	[ "$installtools" = "y" ] && {
 		printf "\n\nIt's always good to do a system update before using. Would you like to continue? [Y/n]"
 		read -r tmp
 		case $tmp in
