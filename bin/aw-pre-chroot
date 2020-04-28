@@ -111,7 +111,7 @@ done
 		esac
 	done
 
-	[ "$bios" = "bios" ] (
+	[ "$bios" = "bios" ] && (
 		printf "\n$divider\n"
 		while : ; do
 			printf "\nDo you want a 'dos' or a 'gpt' partition scheme? [dos/gpt]: "
