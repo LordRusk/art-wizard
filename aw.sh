@@ -1,21 +1,11 @@
 #!/usr/bin/env sh
 
+# getopts
 while getopts "r" parm; do case $parm in
 	r) installtools="y" ;;
 esac done
 
-### FUNCTIONS ###
-gettools() { \
-	printf "\n\nIt's always good to do a system update before using. Would you like to continue? [Y/n]"
-	read -r tmp
-	case $tmp in
-		[Nn]) exit;;
-		*) pacman -Syu ;;
-	esac
-	printf "\nInstalling Tools..." && pacman -S arch-install-scripts >/dev/null 2>&1\
-	}
-
-### ACTUAL SCRIPT
+# script
 clear
 cat << EOF
 Welcome to The Art Wizard,
@@ -51,4 +41,3 @@ read -r tmp
 	git clone https://github.com/lordrusk/art-wizard >/dev/null 2>&1
 	sh ~/art-wizard/bin/aw-pre-chroot
 	}
-
