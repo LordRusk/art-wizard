@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Variables and script settings
-divider="----------------------------"
+divider="--------------"
 
 # User defined variables
 clear
@@ -52,7 +52,7 @@ done
 
 # Give tips and a zsh menu for user
 # configred partition schemes.
-[ "$auto" = "configure" ] && (
+if [ "$auto" = "configure" ]; then
 	printf "\n$divider\n"
 	[ $bios = "bios" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /mnt/boot\n"
 	[ $bios = "efi" ] && printf "\nIf you're going to (re)install grub, mount your boot partition at /esp"
@@ -72,7 +72,7 @@ done
 			*) printf 'Please pick a drive from the list...\n'
 		esac
 	done
-) || [ "$auto" = "auto" ] && (
+elif [ "$auto" = "auto" ]; then
 	printf "\n$divider\n"
 	printf "\nPlease select the drive you would like to install $OS to\n"
 	while : ; do
@@ -111,7 +111,7 @@ done
 		esac
 	done
 
-	[ "$bios" = "bios" ] && (
+	if [ "$bios" = "bios" ]; then
 		printf "\n$divider\n"
 		while : ; do
 			printf "\nDo you want a 'dos' or a 'gpt' partition scheme? [dos/gpt]: "
@@ -122,12 +122,12 @@ done
 				*) printf "\nUnkown or unsupported partition scheme, please answer either 'dos' or 'gpt'\n" ;;
 			esac
 		done
-		)
+	fi
 
 	# Big O'l code block for auto partitioning
 	# using the partitioner script and user
 	# defined variables.
-	[ "$bios" = "efi" ] && [ "$ssp" != "y" ] && (
+	if [ "$bios" = "efi" ] && [ "$ssp" != "y" ]; then
 		sh ~/art-wizard/bin/partitioner gns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
@@ -137,8 +137,7 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-		)
-	[ "$bios" = "efi" ] && [ "$ssp" = "y" ] && (
+	elif [ "$bios" = "efi" ] && [ "$ssp" = "y" ]; then
 		sh ~/art-wizard/bin/partitioner gs $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -150,8 +149,7 @@ done
 		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-		)
-	[ "$ssp" != "y" ] && [ "$ps" = "dos" ] && (
+	elif [ "$ssp" != "y" ] && [ "$ps" = "dos" ]; then
 		sh ~/art-wizard/bin/partitioner dns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
@@ -161,8 +159,7 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-		)
-	[ "$ssp" = "y" ] && [ "$ps" = "dos" ] && (
+	elif [ "$ssp" = "y" ] && [ "$ps" = "dos" ]; then
 		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -174,8 +171,7 @@ done
 		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-		)
-	[ "$ssp" != "y" ] && [ "$ps" = "gpt" ] && (
+	elif [ "$ssp" != "y" ] && [ "$ps" = "gpt" ]; then
 		sh ~/art-wizard/bin/partitioner gns $cdrive 500mb $rps
 		mkfs.ext4 "$cdrive"2
 		mount "$cdrive"2 /mnt
@@ -185,8 +181,7 @@ done
 		mkfs.ext4 "$cdrive"3
 		mkdir /mnt/home
 		mount "$cdrive"3 /mnt/home
-		)
-	[ "$ssp" = "y" ] && [ "$ps" = "gpt" ] && (
+	elif [ "$ssp" = "y" ] && [ "$ps" = "gpt" ]; then
 		sh ~/art-wizard/bin/partitioner ds $cdrive 500mb $rps $sps
 		mkfs.ext4 "$cdrive"3
 		mount "$cdrive"3 /mnt
@@ -198,17 +193,17 @@ done
 		mount "$cdrive"4 /mnt/home
 		mkswap "$cdrive"2
 		swapon "$cdrive"2
-		)
-	)
+	fi
+fi
 
 # Mirrorlist || Init System
 printf "\n$divider\n"
-[ "$OS" = "arch" ] && (
+case $OS in
+	arch) \
 	printf "\nThe Arch mirror list can be slow and unreliable,\nplease edit the mirrorlist for faster speeds.\nPress Enter to continue..."
 	read tmp >/dev/null
-	$editor /etc/pacman.d/mirrorlist
-	)
-[ "$OS" = "artix" ] && (
+	$editor /etc/pacman.d/mirrorlist ;;
+	artix) \
 	while : ; do
 		printf "\nWhich init system would you like to install? [Openrc/Runit/s6]"
 		read -r init
@@ -219,21 +214,22 @@ printf "\n$divider\n"
 			*) printf 'Please answer either Openrc, Runit, or s6' ;;
 		esac
 	done
-	)
+esac
 
 # Install
 clear
-[ "$OS" = "arch" ] && pacstrap /mnt linux linux-firmware base fzf $editor
-[ "$OS" = "artix" ] && (
-	case $init in
+case $OS in
+	arch) pacstrap /mnt linux linux-firmware base fzf $editor ;;
+	artix) case $init in
 		openrc) basestrap /mnt linux linux-firmware base elogind-openrc openrc fzf $editor ;;
 		runit) basestrap /mnt linux linux-firmware base elogind-runit runit fzf $editor ;;
 		s6) basestrap /mnt linux linux-firmware base elogind-s6 s6 fzf $editor ;;
 	esac ;;
-	)
+esac
 
 # Post Install
-[ "$OS" = "arch" ] && (
+case $OS in
+	arch)
 	genfstab -U -p /mnt >> /mnt/etc/fstab
 
 	export OS
@@ -251,9 +247,13 @@ clear
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "
 	read -r tmp
-	[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || reboot
-	)
-[ "$OS" = "artix" ] && (
+	case $tmp in
+		n) exit ;;
+		*) reboot ;;
+	esac
+	;;
+
+	artix)
 	fstabgen -U -p /mnt >> /mnt/etc/fstab
 
 	export OS
@@ -272,5 +272,9 @@ clear
 	printf "\n$divider\n"
 	printf "\nWould you like to restart now? [Y/n]: "
 	read tmp
-	[ "$tmp" = "N" ] || [ "$tmp" = "n" ] || reboot
-	)
+	case $tmp in
+		n) exit ;;
+		*) reboot ;;
+	esac
+	;;
+esac
